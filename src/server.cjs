@@ -7,7 +7,7 @@ const ALLOWED_ORIGIN = 'http://localhost:3000';
 
 const ALLOWED_ORIGINS = [
   "http://localhost:3000",
-  "https://my-app.com",
+  "https://maxislav.github.io/power-outage",
   "https://another-site.net",
 ];
 
@@ -32,7 +32,8 @@ const server = http.createServer(async (req, res) => {
 
       // Отправляем результат клиенту
       //res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      const dd = extractFactObject(data)
+      const dd = extractFactObject(data);
+      console.log('результат клиенту->>', dd)
       res.end(dd);
     } catch (error) {
       console.error('Ошибка при запросе:', error.message);
