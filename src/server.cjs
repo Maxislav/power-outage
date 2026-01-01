@@ -2,6 +2,7 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const zlib = require("zlib");
+const axios = require("axios");
 
 const PORT_HTTPS = 5710;
 const PORT_HTTP = 5711;
@@ -96,80 +97,38 @@ const server = https.createServer(options, async (req, res) => {
 const server2 = http.createServer(async (reqq, ress) => {
   const origin = reqq.headers.origin;
 
-  const options = {
-    hostname: "www.dtek-kem.com.ua",
-    path: "/ua/shutdowns",
-    method: "GET",
-    headers: {
-      authority: "www.dtek-kem.com.ua",
-      method: "GET",
-      path: "/ua/shutdowns",
-      scheme: "https",
-      accept:
-        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-      "accept-encoding": "gzip, deflate, br, zstd",
-      "accept-language": "en-US,en;q=0.9,ru-UA;q=0.8,ru;q=0.7",
-      "cache-control": "max-age=0",
-      priority: "u=0, i",
-      "sec-ch-ua":
-        '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
-      "sec-ch-ua-mobile": "?0",
-      "sec-ch-ua-platform": '"Linux"',
-      "sec-fetch-dest": "document",
-      "sec-fetch-mode": "navigate",
-      "sec-fetch-site": "none",
-      "sec-fetch-user": "?1",
-      "upgrade-insecure-requests": "1",
-      "user-agent":
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
-    },
-  };
-
-  const req = https.request(options, (res) => {
-    const encoding = res.headers["content-encoding"];
-    let stream;
-
-    // Выбираем способ распаковки в зависимости от заголовка сервера
-    if (encoding === "gzip") {
-      stream = res.pipe(zlib.createGunzip());
-    } else if (encoding === "deflate") {
-      stream = res.pipe(zlib.createInflate());
-    } else if (encoding === "br") {
-      stream = res.pipe(zlib.createBrotliDecompress());
-    } else {
-      stream = res; // Данные не сжаты
-    }
-
-    let data = []; // Используем массив для бинарных данных
-
-    console.log(`Статус-код: ${res.statusCode}`);
-    console.log(`Кодировка: ${encoding || "identity"}`);
-
-    stream.on("data", (chunk) => {
-      data.push(chunk);
-    });
-
-    stream.on("end", () => {
-      const fullBuffer = Buffer.concat(data);
-      const html = fullBuffer.toString("utf8");
-
-      if (res.statusCode === 200) {
-        console.log("HTML получен и распакован! Длина:", html.length);
-        ress.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        ress.end(html);
-      } else {
-        console.log("Сервер вернул ошибку или проверку бота.");
-        ress.end(html);
-      }
-    });
-  });
-
-  req.on("error", (e) => {
-    console.error(`Ошибка запроса: ${e.message}`);
-  });
-
-  req.end();
+  const data = await getDtekData();
+  ress.end(data);
 });
+
+async function getDtekData() {
+  try {
+    const response = await axios.get(
+      "https://www.dtek-kem.com.ua/ua/shutdowns",
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+          Accept:
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+          "Accept-Encoding": "gzip, deflate, br", // Axios сам распакует это
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
+        // Это важно для корректной обработки бинарных данных, если автоматика даст сбой
+        responseType: "text",
+      }
+    );
+
+    console.log("HTML получен! Длина:", response.data.length);
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при запросе:", error.message);
+    if (error.response && error.response.status === 403) {
+      console.log("Вас заблокировал Cloudflare или WAF.");
+    }
+  }
+}
 
 server2.listen(PORT_HTTP, () => {
   console.log(`Сервер запущен на https://localhost:${PORT_HTTP}`);
