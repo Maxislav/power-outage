@@ -1,17 +1,22 @@
-const http = require('http');
+const https = require('https');
 
 const PORT = 5710;
 const EXTERNAL_URL = 'https://www.dtek-kem.com.ua/ua/shutdowns';
-const ALLOWED_ORIGIN = 'http://localhost:3000';
+//const ALLOWED_ORIGIN = 'http://localhost:3000';
+
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
 
 
 const ALLOWED_ORIGINS = [
   "http://localhost:3000",
-  "https://my-app.com",
+  "https://maxislav.github.io/power-outage",
   "https://another-site.net",
 ];
 
-const server = http.createServer(async (req, res) => {
+const server = https.createServer(options, async (req, res) => {
 
   const origin = req.headers.origin;
 
@@ -32,7 +37,8 @@ const server = http.createServer(async (req, res) => {
 
       // Отправляем результат клиенту
       //res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      const dd = extractFactObject(data)
+      const dd = extractFactObject(data);
+      console.log('результат клиенту->>', dd)
       res.end(dd);
     } catch (error) {
       console.error('Ошибка при запросе:', error.message);
@@ -47,8 +53,8 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Сервер запущен на http://localhost:${PORT}`);
-  console.log(`Маршрут: http://localhost:${PORT}/shotdown`);
+  console.log(`Сервер запущен на https://localhost:${PORT}`);
+  console.log(`Маршрут: https://localhost:${PORT}/shotdown`);
 });
 
 function extractFactObject(html) {

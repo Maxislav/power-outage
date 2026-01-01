@@ -1,8 +1,13 @@
-const http = require('http');
+const https = require('https');
 
 const PORT = 5710;
 const EXTERNAL_URL = 'https://www.dtek-kem.com.ua/ua/shutdowns';
-const ALLOWED_ORIGIN = 'http://localhost:3000';
+//const ALLOWED_ORIGIN = 'http://localhost:3000';
+
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
 
 
 const ALLOWED_ORIGINS = [
@@ -11,7 +16,7 @@ const ALLOWED_ORIGINS = [
   "https://another-site.net",
 ];
 
-const server = http.createServer(async (req, res) => {
+const server = https.createServer(options, async (req, res) => {
 
   const origin = req.headers.origin;
 
@@ -48,8 +53,8 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Сервер запущен на http://localhost:${PORT}`);
-  console.log(`Маршрут: http://localhost:${PORT}/shotdown`);
+  console.log(`Сервер запущен на https://localhost:${PORT}`);
+  console.log(`Маршрут: https://localhost:${PORT}/shotdown`);
 });
 
 function extractFactObject(html) {
