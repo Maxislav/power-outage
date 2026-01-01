@@ -1,15 +1,14 @@
-const https = require('https');
-const fs = require('fs');
+const https = require("https");
+const fs = require("fs");
 
 const PORT = 5710;
-const EXTERNAL_URL = 'https://www.dtek-kem.com.ua/ua/shutdowns';
+const EXTERNAL_URL = "https://www.dtek-kem.com.ua/ua/shutdowns";
 //const ALLOWED_ORIGIN = 'http://localhost:3000';
 
 const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
+  key: fs.readFileSync("key.pem"),
+  cert: fs.readFileSync("cert.pem"),
 };
-
 
 const ALLOWED_ORIGINS = [
   "http://localhost:3000",
@@ -18,39 +17,45 @@ const ALLOWED_ORIGINS = [
 ];
 
 const server = https.createServer(options, async (req, res) => {
-
   const origin = req.headers.origin;
 
-  console.log('origin ->>',origin)
+  console.log("origin ->>", origin);
   if (ALLOWED_ORIGINS.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   // Проверяем путь запроса
-  if (req.url === '/shotdown' && req.method === 'GET') {
+  if (req.url === "/shotdown" && req.method === "GET") {
     try {
       console.log(`Получен запрос. Обращаюсь к ${EXTERNAL_URL}...`);
 
       // Делаем запрос к сайту ДТЭК
       const response = await fetch(EXTERNAL_URL);
       const data = await response.text();
-      console.log(data)
+      console.log(data);
 
       // Отправляем результат клиенту
       //res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       const dd = extractFactObject(data);
-      console.log('результат клиенту->>', dd)
-      res.end(dd);
+      console.log("результат клиенту->>", dd);
+      if (!dd) {
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(data);
+      } else {
+        res.end(dd);
+      }
     } catch (error) {
-      console.error('Ошибка при запросе:', error.message);
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Не удалось получить данные с сайта ДТЭК' }));
+      console.error("Ошибка при запросе:", error.message);
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({ error: "Не удалось получить данные с сайта ДТЭК" })
+      );
     }
   } else {
     // Обработка несуществующих путей
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not Found. Use /shotdown');
+    res.writeHead(404, { "Content-Type": "text/plain" });
+    res.end("Not Found. Use /shotdown");
   }
 });
 
@@ -62,11 +67,11 @@ server.listen(PORT, () => {
 function extractFactObject(html) {
   const startKeyword = "DisconSchedule.fact = ";
   const startIndex = html.indexOf(startKeyword);
-  
+
   if (startIndex === -1) return null;
 
   // Смещение к началу самого объекта (к первой '{')
-  const jsonStartIndex = html.indexOf('{', startIndex);
+  const jsonStartIndex = html.indexOf("{", startIndex);
   if (jsonStartIndex === -1) return null;
 
   let braceCount = 0;
@@ -74,8 +79,8 @@ function extractFactObject(html) {
 
   // Идем по строке и считаем скобки
   for (let i = jsonStartIndex; i < html.length; i++) {
-    if (html[i] === '{') braceCount++;
-    if (html[i] === '}') braceCount--;
+    if (html[i] === "{") braceCount++;
+    if (html[i] === "}") braceCount--;
 
     if (braceCount === 0) {
       jsonEndIndex = i + 1; // Конец объекта найден
@@ -84,7 +89,6 @@ function extractFactObject(html) {
   }
 
   return html.substring(jsonStartIndex, jsonEndIndex);
-  
 
   // if (jsonEndIndex !== -1) {
   //   const jsonString = html.substring(jsonStartIndex, jsonEndIndex);
