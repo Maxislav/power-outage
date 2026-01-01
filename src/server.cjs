@@ -134,6 +134,7 @@ const server2 = http.createServer(async (reqq, ress) => {
         console.log("Редирект на:", res.headers.location);
       } else {
         console.log("Сервер вернул ошибку или проверку бота.");
+        ress.end(data);
       }
     });
   });
