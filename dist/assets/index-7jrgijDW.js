@@ -1187,7 +1187,7 @@ function Component(props) {
 const html = '<div class="shotdown">\n    <div class="shotdown__title">\n        Сегодя\n    </div>\n    <div class="shotdown__today">\n        <div class="shotdown__area-name">\n            3.1\n        </div>\n        <div class="shotdown__area-schedule" #today>\n\n        </div>\n        \n    </div>\n    <div class="shotdown__title">\n        Завтра\n    </div>\n    <div class="shotdown__today">\n        <div class="shotdown__area-name">\n            3.1\n        </div>\n       \n        <div class="shotdown__area-schedule" #tomorrow>\n\n        </div>\n    </div>\n</div>';
 async function myFetch() {
   try {
-    const response = await fetch("https://165.232.46.174:5710/shotdown");
+    const response = await fetch("http://localhost:5711/shotdown");
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -1282,4 +1282,4 @@ RootComponent = __decorateClass([
   })
 ], RootComponent);
 new RootComponent().init("#app");
-//# sourceMappingURL=index-aNErbwev.js.map
+//# sourceMappingURL=index-7jrgijDW.js.map
