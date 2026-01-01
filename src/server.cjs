@@ -35,6 +35,7 @@ const server = https.createServer(options, async (req, res) => {
       // Делаем запрос к сайту ДТЭК
       const response = await fetch(EXTERNAL_URL);
       const data = await response.text();
+      console.log(data)
 
       // Отправляем результат клиенту
       //res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
