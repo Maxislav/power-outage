@@ -1,4 +1,5 @@
 const https = require('https');
+const fs = require('fs');
 
 const PORT = 5710;
 const EXTERNAL_URL = 'https://www.dtek-kem.com.ua/ua/shutdowns';
