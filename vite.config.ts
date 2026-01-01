@@ -1,6 +1,6 @@
 // vite.config.ts
 import { defineConfig } from "vite";
-import { viteStaticCopy } from 'vite-plugin-static-copy';
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 import path from "path";
 
@@ -9,6 +9,7 @@ export default defineConfig({
     // Enables source maps during development
     devSourcemap: true,
   },
+  base: process.env.APP_BASE || "./",
 
   build: {
     // This enables source maps for the production build
@@ -46,16 +47,13 @@ export default defineConfig({
   assetsInclude: ["**/*.wasm"],
   // Настройка для корректной отдачи типов
   plugins: [
-
     viteStaticCopy({
       targets: [
-       
         {
-         
-          src: 'src/server.cjs',
-          dest: 'server'
-        }
-      ]
-    })
+          src: "src/server.cjs",
+          dest: "server",
+        },
+      ],
+    }),
   ],
 });
