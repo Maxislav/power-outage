@@ -3,7 +3,7 @@ import { IShodownResponce } from "./model";
 export async function myFetch(): Promise<IShodownResponce> {
   try {
     const response = await fetch("http://localhost:5711/shotdown");
-    //const response = await fetch("https://165.232.46.174:5710/shotdown");
+   // const response = await fetch("http://165.232.46.174:5711/shotdown");
     //console.log(response)
 
     // Always check if the response is okay
