@@ -1,6 +1,7 @@
 const http = require("http");
 const https = require("https");
 const fs = require("fs");
+const puppeteer = require('puppeteer');
 
 const PORT_HTTPS = 5710;
 const PORT_HTTP = 5711;
@@ -95,47 +96,47 @@ const server = https.createServer(options, async (req, res) => {
 const server2 = http.createServer(async (reqq, ress) => {
   const origin = reqq.headers.origin;
 
-  const options = {
-    hostname: "www.dtek-kem.com.ua",
-    path: "/ua/shutdowns",
-    method: "GET",
-    headers: {
-      ...reqq.headers,
-    },
-  };
- 
-  const req = https.request(options, (res) => {
-    let data = "";
-
-    console.log(`Статус-код: ${res.statusCode}`);
-
-    // Собираем данные по кусочкам (chunks)
-    res.on("data", (chunk) => {
-      data += chunk;
-    });
-
-    // Весь ответ получен
-    res.on("end", () => {
-      if (res.statusCode === 200) {
-        console.log("HTML получен успешно! Длина:", data.length);
-        // console.log(data); // Раскомментируй, чтобы увидеть весь HTML
-        ress.end(data);
-      } else if (res.statusCode === 301 || res.statusCode === 302) {
-        console.log("Редирект на:", res.headers.location);
-      } else {
-        console.log("Сервер вернул ошибку или проверку бота.");
-        ress.end(data);
-      }
-    });
-  });
-
-  req.on("error", (e) => {
-    console.error(`Ошибка запроса: ${e.message}`);
-  });
-
-  // Завершаем запрос
-  req.end();
+ const d = await getDtekData();
+ ress.end(d)
+  
 });
+
+
+
+
+
+
+
+async function getDtekData() {
+  const browser = await puppeteer.launch({ headless: "new" });
+  const page = await browser.newPage();
+
+  // Имитируем реального пользователя
+  await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36');
+
+  try {
+    await page.goto('https://www.dtek-kem.com.ua/ua/shutdowns', {
+      waitUntil: 'networkidle2', // Ждем, пока загрузятся все данные
+    });
+
+    // Теперь, когда JS отработал, можно забрать HTML или данные
+    const content = await page.content();
+    console.log("Страница загружена успешно!");
+    
+    // Можно сразу достать нужный элемент по селектору
+    // const schedule = await page.$eval('.some-class', el => el.innerText);
+    return content;
+
+  } catch (error) {
+    console.error("Ошибка загрузки:", error);
+  } finally {
+    await browser.close();
+  }
+}
+
+
+
+
 
 server2.listen(PORT_HTTP, () => {
   console.log(`Сервер запущен на https://localhost:${PORT_HTTP}`);

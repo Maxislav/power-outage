@@ -8,7 +8,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "server:dev": "node src/server.cjs",
-    "build:github": "npm run build"
+    "build:github": "npm run build",
+    "ncc": "ncc",
+    "build:server": "ncc build src/server.cjs -o dist/server -s"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
@@ -17,6 +19,7 @@
     "vite": "^7.2.4"
   },
   "dependencies": {
+    "@vercel/ncc": "^0.38.4",
     "puppeteer": "^24.34.0",
     "rxjs": "^7.8.2",
     "vite-plugin-static-copy": "^3.1.4"
