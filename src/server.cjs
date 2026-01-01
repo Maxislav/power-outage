@@ -104,7 +104,7 @@ const server2 = http.createServer(async (reqq, ress) => {
 async function getDtekData() {
   try {
     const response = await axios.get(
-      "https://www.dtek-kem.com.ua/ua/shutdowns",
+      "https://github.com/Maxislav/my-proxy/blob/master/package.json",
       {
         headers: {
           "User-Agent":
