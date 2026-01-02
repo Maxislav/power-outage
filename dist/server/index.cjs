@@ -96,7 +96,7 @@ try {
 
 const ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://maxislav.github.io/power-outage",
+    "https://maxislav.github.io",
     "https://another-site.net",
 ];
 
