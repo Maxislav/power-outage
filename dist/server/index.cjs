@@ -121,6 +121,7 @@ const serverHttps = https.createServer(options, async (reqq, ress) => {
             ress.end(error);
         }
     } else if(reqq.url === "/risk" && reqq.method === "GET"){
+        ress.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         ress.end('<a href="https://maxislav.github.io/power-outage/">Bернуться на сайт</a>')
     }
 
