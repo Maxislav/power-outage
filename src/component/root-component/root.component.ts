@@ -1,8 +1,10 @@
 import {AutoSubscription, Component, Viewchild} from "@app/decorator";
 import html from "./root.component.html?raw";
-import {myFetch} from "@app/request";
-import {from, map, tap} from "rxjs";
+import {capGet, myFetch} from "@app/request";
+import {from, map, take, tap} from "rxjs";
 import {EGpv, IData, ISlot} from "@app/model";
+import {Capacitor} from '@capacitor/core';
+import dateFormat, {masks} from "dateformat";
 
 @Component({
     template: html,
@@ -10,15 +12,28 @@ import {EGpv, IData, ISlot} from "@app/model";
 export class RootComponent {
     @Viewchild("today") private readonly todayEl: HTMLElement;
     @Viewchild("tomorrow") private readonly tomorrowEl: HTMLElement;
+    @Viewchild("refresh") private readonly refreshEl: HTMLElement;
+    @Viewchild("updatedOn") private readonly updatedOnEl: HTMLElement;
     private readonly SEC_IN_DAY = 86400;
 
     init(selector: string) {
+
+        this.refreshEl.addEventListener('click', (e) => {
+            this.todayEl.innerHTML = ''
+            this.tomorrowEl.innerHTML = ''
+            this.myFetch()
+                .pipe(take(1))
+                .subscribe()
+        })
     }
 
     @AutoSubscription()
     myFetch() {
-        return from(myFetch()).pipe(
+        return from(this.getReqFn()).pipe(
             tap((d: IData) => {
+
+
+                this.updatedOnEl.innerText = dateFormat(new Date(d['3.1'].updatedOn), "yyyy-MM-dd hh:mm");
                 const today = d['3.1']['today']
                 const slotsToday = today.slots
                 const slotsTomorrow = d['3.1']['tomorrow'].slots
@@ -28,6 +43,16 @@ export class RootComponent {
                 // debugger
             })
         );
+    }
+
+    getReqFn(): Promise<any> {
+
+        const platform = Capacitor.getPlatform();
+        if (platform === 'android') {
+            return capGet()
+        } else {
+            return myFetch()
+        }
     }
 
     checkSlots(slots: ISlot[], time: number): ISlot {

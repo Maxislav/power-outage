@@ -1,0 +1,10 @@
+{
+	"appId": "app.poweroutage.com",
+	"appName": "power-outage",
+	"webDir": "dist",
+	"plugins": {
+		"CapacitorHttp": {
+			"enabled": true
+		}
+	}
+}

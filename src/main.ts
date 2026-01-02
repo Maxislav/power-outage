@@ -1,7 +1,9 @@
-import { RootComponent } from './component/root-component/root.component';
-import { Component } from './decorator';
+import {RootComponent} from './component/root-component/root.component';
+import {Component} from './decorator';
 import './style.less'
+import {MyCapacitorAppController} from "@app/my-capacitor.controller.ts";
 
+new MyCapacitorAppController().init();
 
 // async function myFetch(): Promise<any> {
 
@@ -24,7 +26,7 @@ import './style.less'
 //     console.error('Could not fetch users:', error);
 //     return {};
 //   }
-  
+
 // }
 
 // myFetch()

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">power-outage</string>
+    <string name="title_activity_main">power-outage</string>
+    <string name="package_name">app.poweroutage.com</string>
+    <string name="custom_url_scheme">app.poweroutage.com</string>
+</resources>

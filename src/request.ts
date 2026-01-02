@@ -1,5 +1,5 @@
 import {IData} from "@app/model.ts";
-
+import { CapacitorHttp } from '@capacitor/core';
 const REQ_URL = {
     dev: 'http://165.232.46.174:5711/shutdown',
     prod: 'https://165.232.46.174:5710/shutdown'
@@ -35,3 +35,15 @@ export async function myFetch(): Promise<IData> {
     return {} as any;
   }
 }
+
+export const capGet = async () => {
+    const options = {
+        url: REQ_URL.prod,
+        headers: { 'Content-Type': 'application/json' },
+       // params: { user: '123' },
+    };
+
+    const response = await CapacitorHttp.get(options);
+    console.log('Response:', response.data);
+    return JSON.parse(response.data);
+};
