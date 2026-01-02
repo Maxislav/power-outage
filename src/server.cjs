@@ -172,7 +172,7 @@ async function myRequest() {
         res.on('end', () => {
             console.log('end ->>');
             //console.log(extractFactObject(data));
-            const resObj = extractFactObject(data);
+            const resObj = (data);
             deferred.resolve(resObj);
         });
 
