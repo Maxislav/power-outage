@@ -1,182 +1,185 @@
 const http = require("http");
 const https = require("https");
 const fs = require("fs");
-const zlib = require("zlib");
-const axios = require("axios");
+
 
 const PORT_HTTPS = 5710;
 const PORT_HTTP = 5711;
-const EXTERNAL_URL = "https://www.dtek-kem.com.ua/ua/shutdowns";
-//const ALLOWED_ORIGIN = 'http://localhost:3000';
+
+
+class Deferred {
+    constructor() {
+        this.promise = new Promise((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
+        });
+    }
+}
+
 
 const options = {
-  key: null,
-  cert: null,
+    key: null,
+    cert: null,
 };
 try {
-  options.key = fs.readFileSync("key.pem");
-  options.cert = fs.readFileSync("cert.pem");
+    options.key = fs.readFileSync("key.pem");
+    options.cert = fs.readFileSync("cert.pem");
 } catch (e) {
-  console.log("no sert");
+    console.log("no sert");
 }
 
 const ALLOWED_ORIGINS = [
-  "http://localhost:3000",
-  "https://maxislav.github.io/power-outage",
-  "https://another-site.net",
+    "http://localhost:3000",
+    "https://maxislav.github.io/power-outage",
+    "https://another-site.net",
 ];
 
-// const headers = {
-//   'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-//   'accept-language': 'en-US,en;q=0.9,ru-UA;q=0.8,ru;q=0.7',
-//   'cache-control': 'max-age=0',
-//   'priority': 'u=0, i',
-//   'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
-//   'sec-ch-ua-mobile': '?0',
-//   'sec-ch-ua-platform': '"Linux"',
-//   'sec-fetch-dest': 'document',
-//   'sec-fetch-mode': 'navigate',
-//   'sec-fetch-site': 'none',
-//   'sec-fetch-user': '?1',
-//   'upgrade-insecure-requests': '1',
-//   'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-//   'cookie': 'visid_incap_2224657=C4qg3tynR46X3ZinBES6SsXXVmkAAAAAQUIPAAAAAACkinURo/gzrOpJBRB1llIW; incap_ses_689_2224657=U4yMY05tHhat3DqrS9KPCcXXVmkAAAAA2QNLvabOxdACNwjD06yLmg==; dtek-kem=1gccm48kedg9qd696ss06anmu3; _language=1f011804d107a9f0f6fa36417ed49140e5bc2106c740e65666f3a94e857201cca%3A2%3A%7Bi%3A0%3Bs%3A9%3A%22_language%22%3Bi%3A1%3Bs%3A2%3A%22uk%22%3B%7D; _csrf-dtek-kem=39e2be2a9d4597c71ba9a56342e622da0e0c2e7402689161494dfdd43baa7604a%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22_csrf-dtek-kem%22%3Bi%3A1%3Bs%3A32%3A%22mJHXwWO23-MKA2yzHl6XZxyN_Fil2pQi%22%3B%7D; _ga=GA1.3.334945741.1767299050; _gid=GA1.3.763767310.1767299051; _hjSessionUser_5026684=eyJpZCI6ImYwNDI1MTZiLWIzOTMtNWIwOS04YjIzLTFiYTAyZjczNGYxYSIsImNyZWF0ZWQiOjE3NjcyOTkwNTA5NjIsImV4aXN0aW5nIjpmYWxzZX0=; _hjSession_5026684=eyJpZCI6IjE1OTBmYWMxLWU1NGQtNDcwYi04ODBiLWEyYTcxODZhZGYxMSIsImMiOjE3NjcyOTkwNTA5NjQsInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjoxLCJzcCI6MH0=; incap_wrt_373=69dWaQAAAAC5je1eGgAI9QIQlfLVz4oCGJey28oGIAIox6/bygYwAVL7gYqHxQlMRQoTnNldEDs=; _ga_DLFSTRRPM2=GS2.1.s1767299050$o1$g1$t1767299121$j60$l0$h0'
-// };
+let cookie;
 
-// Пример вызова
+const serverHttps = https.createServer(options, async (reqq, ress) => {
+    const origin = req.headers.origin;
 
-const server = https.createServer(options, async (req, res) => {
-  const origin = req.headers.origin;
-
-  console.log("origin ->>", origin);
-  if (ALLOWED_ORIGINS.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  // Проверяем путь запроса
-  if (req.url === "/shotdown" && req.method === "GET") {
-    try {
-      console.log(`Получен запрос. Обращаюсь к ${EXTERNAL_URL}...`);
-
-      // Делаем запрос к сайту ДТЭК
-      const response = await fetch(EXTERNAL_URL, {
-        headers: {
-          ...req.headers,
-          host: "www.dtek-kem.com.ua/ua/shutdowns",
-          referer: "https://www.dtek-kem.com.ua/ua/shutdowns",
-        },
-      });
-      const data = await response.text();
-      // console.log(data);
-
-      // Отправляем результат клиенту
-      //res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      const dd = extractFactObject(data);
-      //console.log("результат клиенту->>", dd);
-      if (!dd) {
-        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-        res.end(data);
-      } else {
-        res.end(dd);
-      }
-    } catch (error) {
-      console.error("Ошибка при запросе:", error.message);
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(
-        JSON.stringify({ error: "Не удалось получить данные с сайта ДТЭК" })
-      );
+    console.log("origin ->>", origin);
+    if (ALLOWED_ORIGINS.includes(origin)) {
+        ress.setHeader("Access-Control-Allow-Origin", origin);
     }
-  } else {
-    // Обработка несуществующих путей
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Not Found. Use /shotdown");
-  }
+    ress.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+    ress.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    // Проверяем путь запроса
+    if (reqq.url === "/shotdown" && reqq.method === "GET") {
+        try {
+            const data = await myRequest();
+            ress.end(data);
+        } catch (error) {
+            console.error("Ошибка при запросе:", error);
+            ress.end(error);
+        }
+    } else {
+        // Обработка несуществующих путей
+        ress.writeHead(404, {"Content-Type": "text/plain"});
+        ress.end("Not Found. Use /shotdown");
+    }
 });
 
-const server2 = http.createServer(async (reqq, ress) => {
-  const origin = reqq.headers.origin;
+const serverHttp = http.createServer(async (reqq, ress) => {
+    const origin = reqq.headers.origin;
 
-  const data = await getDtekData();
-  ress.end(data);
+
+    if (reqq.url === "/shotdown" && reqq.method === "GET") {
+        try {
+            const data = await myRequest();
+            ress.end(data);
+        } catch (error) {
+            console.error("Ошибка при запросе:", error);
+            ress.end(error);
+        }
+    } else {
+        // Обработка несуществующих путей
+        ress.writeHead(404, {"Content-Type": "text/plain"});
+        ress.end("Not Found. Use /shotdown");
+    }
+
 });
 
-async function getDtekData() {
-  try {
-    const response = await axios.get(
-      "https://github.com/Maxislav/my-proxy/blob/master/package.json",
-      {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
-          Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-          "Accept-Encoding": "gzip, deflate, br", // Axios сам распакует это
-          "Cache-Control": "no-cache",
-          Connection: "keep-alive",
-        },
-        // Это важно для корректной обработки бинарных данных, если автоматика даст сбой
-        responseType: "text",
-      }
-    );
 
-    console.log("HTML получен! Длина:", response.data.length);
-    return response.data;
-  } catch (error) {
-    console.error("Ошибка при запросе:", error.message);
-    if (error.response && error.response.status === 403) {
-      console.log("Вас заблокировал Cloudflare или WAF.");
-    }
-  }
-}
-
-server2.listen(PORT_HTTP, () => {
-  console.log(`Сервер запущен на https://localhost:${PORT_HTTP}`);
-  console.log(`Маршрут: https://localhost:${PORT_HTTP}/shotdown`);
+serverHttp.listen(PORT_HTTP, () => {
+    console.log(`Сервер запущен на https://localhost:${PORT_HTTP}`);
+    console.log(`Маршрут: https://localhost:${PORT_HTTP}/shotdown`);
 });
 
 if (options.cert) {
-  server.listen(PORT_HTTPS, () => {
-    console.log(`Сервер запущен на https://localhost:${PORT_HTTPS}`);
-    console.log(`Маршрут: https://localhost:${PORT_HTTPS}/shotdown`);
-  });
+    serverHttps.listen(PORT_HTTPS, () => {
+        console.log(`Сервер запущен на https://localhost:${PORT_HTTPS}`);
+        console.log(`Маршрут: https://localhost:${PORT_HTTPS}/shotdown`);
+    });
 }
 
 function extractFactObject(html) {
-  const startKeyword = "DisconSchedule.fact = ";
-  const startIndex = html.indexOf(startKeyword);
+    const startKeyword = "DisconSchedule.fact = ";
+    const startIndex = html.indexOf(startKeyword);
 
-  if (startIndex === -1) return null;
+    if (startIndex === -1) return null;
 
-  // Смещение к началу самого объекта (к первой '{')
-  const jsonStartIndex = html.indexOf("{", startIndex);
-  if (jsonStartIndex === -1) return null;
+    // Смещение к началу самого объекта (к первой '{')
+    const jsonStartIndex = html.indexOf("{", startIndex);
+    if (jsonStartIndex === -1) return null;
 
-  let braceCount = 0;
-  let jsonEndIndex = -1;
+    let braceCount = 0;
+    let jsonEndIndex = -1;
 
-  // Идем по строке и считаем скобки
-  for (let i = jsonStartIndex; i < html.length; i++) {
-    if (html[i] === "{") braceCount++;
-    if (html[i] === "}") braceCount--;
+    // Идем по строке и считаем скобки
+    for (let i = jsonStartIndex; i < html.length; i++) {
+        if (html[i] === "{") braceCount++;
+        if (html[i] === "}") braceCount--;
 
-    if (braceCount === 0) {
-      jsonEndIndex = i + 1; // Конец объекта найден
-      break;
+        if (braceCount === 0) {
+            jsonEndIndex = i + 1; // Конец объекта найден
+            break;
+        }
     }
-  }
 
-  return html.substring(jsonStartIndex, jsonEndIndex);
+    return html.substring(jsonStartIndex, jsonEndIndex);
+}
 
-  // if (jsonEndIndex !== -1) {
-  //   const jsonString = html.substring(jsonStartIndex, jsonEndIndex);
-  //   try {
-  //     return JSON.parse(jsonString);
-  //   } catch (e) {
-  //     console.error("Ошибка парсинга вложенного JSON:", e.message);
-  //     return null;
-  //   }
-  // }
 
-  // return null;
+
+async function myRequest() {
+
+    const deferred = new Deferred();
+
+    const options = {
+        hostname: 'www.dtek-kem.com.ua',
+        path: '/ua/shutdowns',
+        port: 443,
+        method: 'GET',
+        headers: {
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'accept-language': 'en-US,en;q=0.9,ru-UA;q=0.8,ru;q=0.7',
+            'cache-control': 'no-cache',
+            // _language=1f011804d107a9f0f6fa36417ed49140e5bc2106c740e65666f3a94e857201cca%3A2%3A%7Bi%3A0%3Bs%3A9%3A%22_language%22%3Bi%3A1%3Bs%3A2%3A%22uk%22%3B%7D; Domain=dtek-kem.com.ua; incap_wrt_373=l4ZXaQAAAAAVyqQeGgAI9QIQ19KJ+IoCGMOP3soGIAIol43eygYwAcI97KunruIFdFbLUVxCTvE=
+            'cookie': 'Domain=dtek-kem.com.ua; _language=1f011804d107a9f0f6fa36417ed49140e5bc2106c740e65666f3a94e857201cca%3A2%3A%7Bi%3A0%3Bs%3A9%3A%22_language%22%3Bi%3A1%3Bs%3A2%3A%22uk%22%3B%7D; _csrf-dtek-kem=c8f39373a7774952fd97b02a7f43cc2ac9e324e318f7dcc772d7a8a0e3bad787a%3A2%3A%7Bi%3A0%3Bs%3A14%3A%22_csrf-dtek-kem%22%3Bi%3A1%3Bs%3A32%3A%22V34z7YvlMC38q_x6V5lmODnzaXzxYN2z%22%3B%7D; incap_ses_608_2224657=ADCQBtph4nMECpJR2gxwCAV2V2kAAAAATsGxAx1IHVBJ0E9pvJaz7g==; _gid=GA1.3.687185050.1767339528; _hjSession_5026684=eyJpZCI6ImVjYmE4YzgyLTdhNzAtNDcxYS1iYTdhLWI0MzUyNWY4NGYxYSIsImMiOjE3NjczMzk1Mjc5MjIsInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjoxLCJzcCI6MX0=; incap_ses_689_2224657=7JGtWNRVzk0+GqurS9KPCY95V2kAAAAA9FA8iYF/1+dyneFu2VNTZg==; _hjSessionUser_5026684=eyJpZCI6IjkyZGE5NjI4LWU2OWUtNTY2My04MjRhLTU5OTJiM2U3N2E4MSIsImNyZWF0ZWQiOjE3NjczMzk1Mjc5MjEsImV4aXN0aW5nIjp0cnVlfQ==; Domain=dtek-kem.com.ua; dtek-kem=ijdn71j2j7rd07kohj08qh9mqu; incap_ses_184_2224657=7F3zcUdr/jQaiWOyarONAgOBV2kAAAAA3BzxLegvPYebi1yzRDb7oA==; visid_incap_2224657=I2r5ysVoStilW4lHadL7AQV2V2kAAAAAQkIPAAAAAACAWXXBAVXf0RLLatMOoJcvJXZOhO7X2G5m; _ga_DLFSTRRPM2=GS2.1.s1767339527$o1$g1$t1767342346$j55$l0$h0; _ga=GA1.3.793052785.1767339528; _gat_gtag_UA_121351636_1=1; incap_wrt_373=CYFXaQAAAAASnJYnGgAI9QIQ/bzm9ooCGLWE3soGIAIohYLeygYwASsTGroGYIlb8Cl66SYX3nk=',
+            //'cookie': '_language=1f011804d107a9f0f6fa36417ed49140e5bc2106c740e65666f3a94e857201cca%3A2%3A%7Bi%3A0%3Bs%3A9%3A%22_language%22%3Bi%3A1%3Bs%3A2%3A%22uk%22%3B%7D; incap_wrt_373=DYFXaQAAAAC4zvQ5GgAI9QIQ/bzm9ooCGLmE3soGIAIohYLeygYwARBZGNX0CeGPiUR1Cf2fBZU=',
+            'pragma': 'no-cache',
+            'priority': 'u=0, i',
+            'sec-ch-ua': '"Google Chrome";v="143", "Chromium";v="143", "Not A(Brand";v="24"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'sec-fetch-dest': 'document',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-site': 'none',
+            'sec-fetch-user': '?1',
+            'upgrade-insecure-requests': '1',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36'
+        }
+    };
+
+    https.get(options, (res) => {
+        let data = '';
+        const headers = res.headers;
+        console.log('Set-Cookie:', headers['set-cookie']);
+
+        const setCookieHeader = res.headers['set-cookie'];
+        const newCookies = setCookieHeader.map(cookie => cookie.split(';')[0]);
+
+        cookie = newCookies.join('; ');
+
+        // Получаем части данных
+        res.on('data', (chunk) => {
+            data += chunk;
+        });
+
+        // Весь ответ получен
+        res.on('end', () => {
+            console.log('end ->>');
+            //console.log(extractFactObject(data));
+            const resObj = extractFactObject(data);
+            deferred.resolve(resObj);
+        });
+
+    }).on('error', (err) => {
+        console.log('Ошибка: ' + err.message);
+        deferred.reject(err.message);
+    });
+
+    return deferred.promise
 }
