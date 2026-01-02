@@ -19,26 +19,28 @@ export class RootComponent {
     myFetch() {
         return from(myFetch()).pipe(
             tap((d: IData) => {
-                const day = d['3.1']['today']
-                const slots = day.slots
-               console.log(day);
-                this.render(slots, this.todayEl);
-              // debugger
+                const today = d['3.1']['today']
+                const slotsToday = today.slots
+                const slotsTomorrow = d['3.1']['tomorrow'].slots
+                console.log(today);
+                this.render(slotsToday, this.todayEl);
+                this.render(slotsTomorrow, this.tomorrowEl);
+                // debugger
             })
         );
     }
 
     checkSlots(slots: ISlot[], time: number): ISlot {
         return slots.find(slot => {
-           return slot.start/60 <= time && time < slot.end/60 ;
+            return slot.start / 60 <= time && time < slot.end / 60;
         })
     }
 
-    render(slots: ISlot[], el: HTMLElement): void{
+    render(slots: ISlot[], el: HTMLElement): void {
         for (let i = 0; i < 24; i++) {
             //const currentSlot = this.checkSlots(slots, i);
             const firstSlot = this.checkSlots(slots, i);
-            const secondSlot = this.checkSlots(slots, i+0.5);
+            const secondSlot = this.checkSlots(slots, i + 0.5);
             // debugger
 
             const rowEl = document.createElement("div");
@@ -46,24 +48,21 @@ export class RootComponent {
             const key = i
             const hhKeyEl = document.createElement("div");
             hhKeyEl.classList.add("shutdown__key");
-            hhKeyEl.innerHTML = `${key}-${key+1}`;
+            hhKeyEl.innerHTML = `${key}-${key + 1}`;
             const hhValueEl = document.createElement("div");
 
-            if(firstSlot.type === "NotPlanned" && secondSlot.type === "NotPlanned"){
+            if (firstSlot.type === "NotPlanned" && secondSlot.type === "NotPlanned") {
                 hhValueEl.classList.add("shutdown__value", "shutdown__value--work");
             }
-            if(firstSlot.type === "NotPlanned" && secondSlot.type === "Definite"){
+            if (firstSlot.type === "NotPlanned" && secondSlot.type === "Definite") {
                 hhValueEl.classList.add("shutdown__value", "shutdown__value--second");
             }
-            if(firstSlot.type === "Definite" && secondSlot.type === "NotPlanned"){
+            if (firstSlot.type === "Definite" && secondSlot.type === "NotPlanned") {
                 hhValueEl.classList.add("shutdown__value", "shutdown__value--first");
             }
-            if(firstSlot.type === "Definite" && secondSlot.type === "Definite"){
+            if (firstSlot.type === "Definite" && secondSlot.type === "Definite") {
                 hhValueEl.classList.add("shutdown__value", "shutdown__value--hide");
             }
-
-
-
 
 
             rowEl.appendChild(hhKeyEl);
