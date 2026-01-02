@@ -120,7 +120,12 @@ const serverHttps = https.createServer(options, async (reqq, ress) => {
             console.error("Ошибка при запросе:", error);
             ress.end(error);
         }
-    } else {
+    } else if(reqq.url === "/risk" && reqq.method === "GET"){
+        ress.end('<a href="https://maxislav.github.io/power-outage/">Bернуться на сайт</a>')
+    }
+
+
+    else {
         // Обработка несуществующих путей
         ress.writeHead(404, {"Content-Type": "text/plain"});
         ress.end("Not Found. Use /shutdown");
