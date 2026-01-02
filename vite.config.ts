@@ -47,13 +47,13 @@ export default defineConfig({
   assetsInclude: ["**/*.wasm"],
   // Настройка для корректной отдачи типов
   plugins: [
-    viteStaticCopy({
-      targets: [
-        {
-          src: "src/server.cjs",
-          dest: "server",
-        },
-      ],
-    }),
+    // viteStaticCopy({
+    //   targets: [
+    //     {
+    //       src: "src/server.cjs",
+    //       dest: "server",
+    //     },
+    //   ],
+    // }),
   ],
 });

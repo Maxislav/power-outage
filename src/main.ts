@@ -6,7 +6,7 @@ import './style.less'
 // async function myFetch(): Promise<any> {
 
 //   try {
-//     const response = await fetch('http://localhost:5710/shotdown');
+//     const response = await fetch('http://localhost:5710/shutdown');
 //     console.log(response)
 
 //     // Always check if the response is okay

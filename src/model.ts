@@ -8,19 +8,24 @@ export enum EGpv{
     "first" = 'first'
 }
 
-export interface IHour{
-    [key: number]: EGpv
+export interface ISlot{
+    start: number,
+    end: number,
+    type: string
 }
 
-export interface IGpv{
-    [key: string]: IHour;
+export interface IDay{
+    date: string,
+    slots: ISlot[],
+    status: string
+}
+
+export interface ITodayTomorrow{
+    today: IDay,
+    tomorrow: IDay,
+    updatedOn: string
 }
 
 export interface IData{
-    [key: string]: IGpv
-}
-export interface IShodownResponce{
-    data: IData,
-    today: number,
-    update: string
+    [key: string]:  ITodayTomorrow
 }
