@@ -5,7 +5,12 @@ import { distinctUntilChanged, from, map, take, tap, timer } from "rxjs";
 import { EGpv, EslotType, EStatus, IData, IDay, ISlot } from "@app/model";
 import { Capacitor } from "@capacitor/core";
 import dateFormat, { masks } from "dateformat";
-import { getCurrentSlot, getSunColor, getSunPosition, timerFormatHtml } from "@app/helper";
+import {
+  getCurrentSlot,
+  getSunColor,
+  getSunPosition,
+  timerFormatHtml,
+} from "@app/helper";
 import { SlotController } from "../slot-component/slot.component";
 
 @Component({
@@ -13,6 +18,7 @@ import { SlotController } from "../slot-component/slot.component";
 })
 export class RootComponent {
   rootElement: HTMLDivElement;
+  sectionElement: HTMLDivElement;
   @Viewchild("today") private readonly todayEl: HTMLElement;
   @Viewchild("tomorrow") private readonly tomorrowEl: HTMLElement;
   @Viewchild("refresh") private readonly refreshEl: HTMLElement;
@@ -20,6 +26,8 @@ export class RootComponent {
   @Viewchild("slots") private readonly slotsEl: HTMLElement;
   @Viewchild("currentTime") private readonly currentTimeEl: HTMLElement;
   private readonly SEC_IN_DAY = 86400;
+  dayEls: HTMLElement[] = [];
+
   slotList: SlotController[] = [];
 
   init(selector: string) {
@@ -33,6 +41,9 @@ export class RootComponent {
       this.slotList = [];
       this.myFetch().pipe(take(1)).subscribe();
     });
+    this.dayEls = [
+      ...this.sectionElement.querySelectorAll(".shutdown__day"),
+    ] as HTMLElement[];
   }
 
   @AutoSubscription()
@@ -72,6 +83,9 @@ export class RootComponent {
 
   @AutoSubscription()
   myFetch() {
+    this.dayEls.forEach((el) => {
+      el.classList.add("loading");
+    });
     return from(this.getReqFn()).pipe(
       tap((d: IData) => {
         this.updatedOnEl.innerText = dateFormat(
@@ -80,11 +94,14 @@ export class RootComponent {
         );
         const today = d["3.1"]["today"];
         const slotsToday = today.slots;
-        const tomorrow = d["3.1"]["tomorrow"]
+        const tomorrow = d["3.1"]["tomorrow"];
         console.log(d["3.1"]);
         this.render(today, this.todayEl);
         this.render(tomorrow, this.tomorrowEl);
         this.renderSlots(slotsToday);
+        this.dayEls.forEach((el) => {
+          el.classList.remove("loading");
+        });
       })
     );
   }
@@ -127,15 +144,14 @@ export class RootComponent {
   render(day: IDay, el: HTMLElement): void {
     const slots = day.slots;
 
-    if(day.status == EStatus.WAITINGFORSCHEDULE){
-        const div = document.createElement('div');
+    if (day.status == EStatus.WAITINGFORSCHEDULE) {
+      const div = document.createElement("div");
 
-        div.innerText = "Ожидаем обновления"
-        el.appendChild(div);
-        el.classList.add('shutdown__area-schedule--waiting')
-        return;
+      div.innerText = "Ожидаем обновления";
+      el.appendChild(div);
+      el.classList.add("shutdown__area-schedule--waiting");
+      return;
     }
-
 
     for (let i = 0; i < 24; i++) {
       //const currentSlot = this.checkSlots(slots, i);
@@ -180,4 +196,6 @@ export class RootComponent {
       return slot.start / 60 <= time && time < slot.end / 60;
     });
   }
+
+  destroy() {}
 }

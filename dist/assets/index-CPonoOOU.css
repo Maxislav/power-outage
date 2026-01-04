@@ -7,6 +7,14 @@
   font-display: swap;
   /* Helps text appear faster while loading */
 }
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -59,16 +67,28 @@ body,
 .shutdown {
   padding: 0 10px;
 }
+.shutdown__day {
+  min-height: 104px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ffaf54;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.shutdown__day.loading {
+  background: linear-gradient(90deg, #c78c7b, #23a6d5, #c78c7b);
+  background-size: 200% 400%;
+  animation: gradient-animation 1s linear infinite;
+  /* Размеры для примера */
+  width: 100%;
+  border-radius: 10px;
+}
 .shutdown__area-schedule {
   display: grid;
   grid-template-columns: repeat(24, 1fr);
   column-gap: 1px;
   width: 100%;
-  padding: 1px;
   box-sizing: border-box;
-  background-color: #ccc;
-  border-radius: 10px;
-  overflow: hidden;
 }
 .shutdown__area-schedule--waiting {
   grid-template-columns: 1fr;
@@ -174,14 +194,18 @@ body,
   text-shadow: 0 0 3px wheat;
   user-select: none;
   border: 1px solid #ffaf54;
+  color: wheat;
+  text-shadow: 0 0 2px white, 0 0 5px red;
 }
 .shutdown__refresh .button:active {
-  box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: inset 2px 2px 10px rgba(0, 0, 0, 0.8);
+  color: gray;
 }
 .shutdown__update-time {
   font-weight: bold;
   color: wheat;
   text-shadow: 0 0 2px white, 0 0 5px red;
+  font-size: 12px;
 }
 .shutdown__slots {
   display: flex;

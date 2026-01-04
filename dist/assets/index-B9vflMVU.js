@@ -1450,7 +1450,7 @@ function Component(props) {
     };
   };
 }
-const html = '<div class="shutdown">\n  <div class="shutdown__area-container">\n    <div class="shutdown__area-name">3.1 </div>\n    <div class="shutdown__current-time" #currentTime></div>\n  </div>\n \n  <div class="shutdown__title">График на Сегодня</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">График на Завтра</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__slots" #slots></div>\n  <div class="shutdown__empty-space"></div>\n\n  <div class="shutdown__refresh">\n    <div class="shutdown__update-time">\n      Время получения данных <span #updatedOn></span>\n    </div>\n    <div class="button" #refresh>Обновить</button>\n  </div>\n</div>\n';
+const html = '<div class="shutdown">\n  <div class="shutdown__area-container">\n    <div class="shutdown__area-name">3.1 </div>\n    <div class="shutdown__current-time" #currentTime></div>\n  </div>\n \n  <div class="shutdown__title">График на Сегодня</div>\n  <div class="shutdown__day">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">График на Завтра</div>\n  <div class="shutdown__day">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__slots" #slots></div>\n  <div class="shutdown__empty-space"></div>\n\n  <div class="shutdown__refresh">\n    <div class="shutdown__update-time">\n      Время получения данных <span #updatedOn></span>\n    </div>\n    <div class="button" #refresh>Обновить</button>\n  </div>\n</div>\n';
 var ExceptionCode;
 (function(ExceptionCode2) {
   ExceptionCode2["Unimplemented"] = "UNIMPLEMENTED";
@@ -2368,6 +2368,7 @@ var __decorateClass = (decorators, target, key, kind) => {
 };
 let RootComponent = class {
   rootElement;
+  sectionElement;
   todayEl;
   tomorrowEl;
   refreshEl;
@@ -2375,6 +2376,7 @@ let RootComponent = class {
   slotsEl;
   currentTimeEl;
   SEC_IN_DAY = 86400;
+  dayEls = [];
   slotList = [];
   init(selector) {
     this.refreshEl.addEventListener("click", (e) => {
@@ -2386,6 +2388,9 @@ let RootComponent = class {
       this.slotList = [];
       this.myFetch().pipe(take(1)).subscribe();
     });
+    this.dayEls = [
+      ...this.sectionElement.querySelectorAll(".shutdown__day")
+    ];
   }
   currentTimeSub() {
     return timer(2, 200).pipe(
@@ -2417,6 +2422,9 @@ let RootComponent = class {
     );
   }
   myFetch() {
+    this.dayEls.forEach((el) => {
+      el.classList.add("loading");
+    });
     return from(this.getReqFn()).pipe(
       tap((d) => {
         this.updatedOnEl.innerText = dateFormat(
@@ -2430,6 +2438,9 @@ let RootComponent = class {
         this.render(today, this.todayEl);
         this.render(tomorrow, this.tomorrowEl);
         this.renderSlots(slotsToday);
+        this.dayEls.forEach((el) => {
+          el.classList.remove("loading");
+        });
       })
     );
   }
@@ -2505,6 +2516,8 @@ let RootComponent = class {
     return slots.find((slot) => {
       return slot.start / 60 <= time && time < slot.end / 60;
     });
+  }
+  destroy() {
   }
 };
 __decorateClass([
@@ -2598,7 +2611,7 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
   });
 };
 const App = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-BAsaiqes.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
+  web: () => __vitePreload(() => import("./web-C2xmHg5q.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
 });
 class MyCapacitorAppController {
   init() {
@@ -2623,4 +2636,4 @@ new RootComponent().init("#app");
 export {
   WebPlugin as W
 };
-//# sourceMappingURL=index-K7mpAEEY.js.map
+//# sourceMappingURL=index-B9vflMVU.js.map
