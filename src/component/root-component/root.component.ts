@@ -1,11 +1,11 @@
 import { AutoSubscription, Component, Viewchild } from "@app/decorator";
 import html from "./root.component.html?raw";
 import { capGet, myFetch } from "@app/request";
-import { from, map, take, tap, timer } from "rxjs";
+import { distinctUntilChanged, from, map, take, tap, timer } from "rxjs";
 import { EGpv, EslotType, IData, ISlot } from "@app/model";
 import { Capacitor } from "@capacitor/core";
 import dateFormat, { masks } from "dateformat";
-import { getCurrentSlot, getSunColor, getSunPosition } from "@app/helper";
+import { getCurrentSlot, getSunColor, getSunPosition, timerFormatHtml } from "@app/helper";
 import { SlotController } from "../slot-component/slot.component";
 
 @Component({
@@ -18,16 +18,34 @@ export class RootComponent {
   @Viewchild("refresh") private readonly refreshEl: HTMLElement;
   @Viewchild("updatedOn") private readonly updatedOnEl: HTMLElement;
   @Viewchild("slots") private readonly slotsEl: HTMLElement;
+  @Viewchild("currentTime") private readonly currentTimeEl: HTMLElement;
   private readonly SEC_IN_DAY = 86400;
+  slotList: SlotController[] = [];
 
   init(selector: string) {
     this.refreshEl.addEventListener("click", (e) => {
       this.todayEl.innerHTML = "";
       this.tomorrowEl.innerHTML = "";
-      this.slotsEl.innerHTML = "";
+      //this.slotsEl.innerHTML = "";
+      this.slotList.forEach((s: SlotController) => {
+        s.destroy();
+      });
+      this.slotList = [];
       this.myFetch().pipe(take(1)).subscribe();
     });
   }
+
+  @AutoSubscription()
+  currentTimeSub() {
+    return timer(2, 200).pipe(
+      map(() => dateFormat(new Date(), "HH:MM:ss")),
+      distinctUntilChanged(),
+      tap((dateText) => {
+        this.currentTimeEl.innerHTML = timerFormatHtml(dateText);
+      })
+    );
+  }
+
   @AutoSubscription()
   calcAngle() {
     let i = 0;
@@ -86,16 +104,18 @@ export class RootComponent {
     const currentIndex = slots.findIndex((slot) => slot === currentSlot);
 
     slots.forEach((slot, index) => {
-      const slotCtrl = new SlotController().init();
+      const slotCtrl = new SlotController();
+      slotCtrl.init();
+      this.slotList.push(slotCtrl);
       slotCtrl.sectionElement;
       this.slotsEl.appendChild(slotCtrl.sectionElement);
 
       slotCtrl.setData(slot);
 
-      if(index == currentIndex){
+      if (index == currentIndex) {
         slotCtrl.setActive(true);
       }
-      if(currentIndex+1 == index){
+      if (currentIndex + 1 == index) {
         slotCtrl.setIsNext(true);
       }
       // const

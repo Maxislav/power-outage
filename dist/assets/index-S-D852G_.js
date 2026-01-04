@@ -1270,6 +1270,14 @@ function from(input, scheduler) {
 function isValidDate(value) {
   return value instanceof Date && !isNaN(value);
 }
+function map(project, thisArg) {
+  return operate(function(source, subscriber) {
+    var index = 0;
+    source.subscribe(createOperatorSubscriber(subscriber, function(value) {
+      subscriber.next(project.call(thisArg, value, index++));
+    }));
+  });
+}
 function timer(dueTime, intervalOrScheduler, scheduler) {
   if (dueTime === void 0) {
     dueTime = 0;
@@ -1325,6 +1333,27 @@ function take(count) {
       }
     }));
   });
+}
+function distinctUntilChanged(comparator, keySelector) {
+  if (keySelector === void 0) {
+    keySelector = identity;
+  }
+  comparator = comparator !== null && comparator !== void 0 ? comparator : defaultCompare;
+  return operate(function(source, subscriber) {
+    var previousKey;
+    var first = true;
+    source.subscribe(createOperatorSubscriber(subscriber, function(value) {
+      var currentKey = keySelector(value);
+      if (first || !comparator(previousKey, currentKey)) {
+        first = false;
+        previousKey = currentKey;
+        subscriber.next(value);
+      }
+    }));
+  });
+}
+function defaultCompare(a, b) {
+  return a === b;
 }
 function tap(observerOrNext, error, complete) {
   var tapObserver = isFunction(observerOrNext) || error || complete ? { next: observerOrNext, error, complete } : observerOrNext;
@@ -1387,7 +1416,7 @@ function Component(props) {
         super(...args);
       }
       // Теперь TS знает, что super.init существует
-      init(...args) {
+      async init(...args) {
         const selector = args[0];
         this.__mainSub = new Subscription();
         this.__rootElement = document.querySelector(selector);
@@ -1404,13 +1433,14 @@ function Component(props) {
             this[ref.propertyKey] = found;
           }
         });
-        if (this.__rootElement) {
-          this.__rootElement.appendChild(this.__section);
-        }
+        const originalInit = await super.init(...args);
         refSub.forEach((ref) => {
           this.__mainSub.add(this[ref.functionName]().subscribe());
         });
-        return super.init(...args);
+        if (this.__rootElement) {
+          this.__rootElement.appendChild(this.__section);
+        }
+        return originalInit;
       }
       destroy(...args) {
         this.__section.remove();
@@ -1420,7 +1450,7 @@ function Component(props) {
     };
   };
 }
-const html = '<div class="shutdown">\n  <div class="shutdown__area-name">3.1</div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">Завтра</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__slots" #slots></div>\n\n  <div class="shutdown__refresh">\n    <div class="shutdown__update-time">\n      Время получения данных <span #updatedOn></span>\n    </div>\n    <div class="button" #refresh>Обновить</button>\n  </div>\n</div>\n';
+const html = '<div class="shutdown">\n  <div class="shutdown__area-container">\n    <div class="shutdown__area-name">3.1 </div>\n    <div class="shutdown__current-time" #currentTime></div>\n  </div>\n \n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">Завтра</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__slots" #slots></div>\n\n  <div class="shutdown__refresh">\n    <div class="shutdown__update-time">\n      Время получения данных <span #updatedOn></span>\n    </div>\n    <div class="button" #refresh>Обновить</button>\n  </div>\n</div>\n';
 var ExceptionCode;
 (function(ExceptionCode2) {
   ExceptionCode2["Unimplemented"] = "UNIMPLEMENTED";
@@ -2204,24 +2234,34 @@ function formatMinutes(totalMinutes) {
   const mDisplay = String(minutes).padStart(2, "0");
   return `${hDisplay}:${mDisplay}`;
 }
-function timeUntil(targetMinutes) {
+function timeUntil(targetMinutes, prefix) {
   const now = /* @__PURE__ */ new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
   let diff = (targetMinutes - currentMinutes + 1440) % 1440;
   if (diff < 0) {
     return "";
   }
-  if (diff === 0) {
+  if (targetMinutes - currentMinutes <= 0) {
     return "Время наступило!";
   }
   const hours = Math.floor(diff / 60);
   const mins = diff % 60;
-  return `Осталось: ${hours} ч. ${mins} мин.`;
+  return `${prefix}: ${hours} ч. ${mins} мин.`;
 }
 function getCurrentSlot(data) {
   const now = /* @__PURE__ */ new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
   return data.find((slot) => currentMinutes >= slot.start && currentMinutes < slot.end);
+}
+function timerFormatHtml(time) {
+  const chars = [...time];
+  return '<div class="time-line">' + chars.reduce((acc, v) => {
+    const syleClass = isNumeric(v) ? "digit" : "char";
+    return acc + `<div class="${syleClass}">${v}</div>`;
+  }, "") + "</div>";
+}
+function isNumeric(val) {
+  return !isNaN(parseFloat(val));
 }
 const template = '<div class="slot" #slot>\n  <div class="slot__title" #name>назва</div>\n  <div class="slot__time-container">\n    <div class="slot__time" #time>время</div>\n    <div class="slot__until" #until></div>\n  </div>\n</div>\n';
 var __defProp$1 = Object.defineProperty;
@@ -2247,8 +2287,8 @@ let SlotController = class {
     [EslotType.DEFINITE]: "Запланировано отключение",
     [EslotType.NOTPLANNED]: "Свет есть"
   };
-  init(selector) {
-    return this;
+  async init(selector) {
+    return Promise.resolve();
   }
   setData(data) {
     this.slotData = data;
@@ -2274,11 +2314,19 @@ let SlotController = class {
         if (this.active) {
           this.slotEl.classList.add("active");
         }
-        if (this.isNext) {
-          this.untilEl.innerText = timeUntil(data.start);
+        if (this.active && data.type === EslotType.DEFINITE) {
+          this.untilEl.innerText = timeUntil(data.start, "");
+        }
+        if (this.isNext && data.type === EslotType.NOTPLANNED) {
+          this.untilEl.innerText = timeUntil(data.start, "Еще");
+        }
+        if (this.isNext && data.type === EslotType.DEFINITE) {
+          this.untilEl.innerText = timeUntil(data.start, "Осталось");
         }
       })
     );
+  }
+  destroy() {
   }
 };
 __decorateClass$1([
@@ -2318,14 +2366,28 @@ let RootComponent = class {
   refreshEl;
   updatedOnEl;
   slotsEl;
+  currentTimeEl;
   SEC_IN_DAY = 86400;
+  slotList = [];
   init(selector) {
     this.refreshEl.addEventListener("click", (e) => {
       this.todayEl.innerHTML = "";
       this.tomorrowEl.innerHTML = "";
-      this.slotsEl.innerHTML = "";
+      this.slotList.forEach((s) => {
+        s.destroy();
+      });
+      this.slotList = [];
       this.myFetch().pipe(take(1)).subscribe();
     });
+  }
+  currentTimeSub() {
+    return timer(2, 200).pipe(
+      map(() => dateFormat(/* @__PURE__ */ new Date(), "HH:MM:ss")),
+      distinctUntilChanged(),
+      tap((dateText) => {
+        this.currentTimeEl.innerHTML = timerFormatHtml(dateText);
+      })
+    );
   }
   calcAngle() {
     return timer(0, 1e3).pipe(
@@ -2377,7 +2439,9 @@ let RootComponent = class {
     const currentSlot = getCurrentSlot(slots);
     const currentIndex = slots.findIndex((slot) => slot === currentSlot);
     slots.forEach((slot, index) => {
-      const slotCtrl = new SlotController().init();
+      const slotCtrl = new SlotController();
+      slotCtrl.init();
+      this.slotList.push(slotCtrl);
       slotCtrl.sectionElement;
       this.slotsEl.appendChild(slotCtrl.sectionElement);
       slotCtrl.setData(slot);
@@ -2443,6 +2507,12 @@ __decorateClass([
 __decorateClass([
   Viewchild("slots")
 ], RootComponent.prototype, "slotsEl", 2);
+__decorateClass([
+  Viewchild("currentTime")
+], RootComponent.prototype, "currentTimeEl", 2);
+__decorateClass([
+  AutoSubscription()
+], RootComponent.prototype, "currentTimeSub", 1);
 __decorateClass([
   AutoSubscription()
 ], RootComponent.prototype, "calcAngle", 1);
@@ -2513,7 +2583,7 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
   });
 };
 const App = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-DTqtlrOm.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
+  web: () => __vitePreload(() => import("./web-BNwdDCku.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
 });
 class MyCapacitorAppController {
   init() {
@@ -2538,4 +2608,4 @@ new RootComponent().init("#app");
 export {
   WebPlugin as W
 };
-//# sourceMappingURL=index-DBHK2SwU.js.map
+//# sourceMappingURL=index-S-D852G_.js.map

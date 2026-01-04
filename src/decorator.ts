@@ -75,7 +75,9 @@ export function Component(props: { template: string }) {
       }
 
       // Теперь TS знает, что super.init существует
-      init(...args: any[]) {
+      async init(...args: any[]) {
+        // const originalInit = await super.init(...args)
+
         const selector = args[0];
         this.__mainSub = new Subscription();
         this.__rootElement = document.querySelector(selector);
@@ -94,15 +96,17 @@ export function Component(props: { template: string }) {
             (this as any)[ref.propertyKey] = found;
           }
         });
-        if (this.__rootElement) {
-          this.__rootElement.appendChild(this.__section);
-        }
+
+        const originalInit = await super.init(...args);
         refSub.forEach((ref: any) => {
           this.__mainSub.add((this as any)[ref.functionName]().subscribe());
         });
+        if (this.__rootElement) {
+          this.__rootElement.appendChild(this.__section);
+        }
 
         //console.log("Логика до вызова оригинального init");
-        return super.init(...args);
+        return originalInit;
       }
       destroy(...args: any[]) {
         this.__section.remove();

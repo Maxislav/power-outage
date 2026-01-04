@@ -72,7 +72,7 @@ export function formatMinutes(totalMinutes: number): string {
   return `${hDisplay}:${mDisplay}`;
 }
 
-export function timeUntil(targetMinutes: number): string {
+export function timeUntil(targetMinutes: number, prefix: string): string {
     // Получаем текущее время в минутах от начала дня
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -85,14 +85,14 @@ export function timeUntil(targetMinutes: number): string {
         return ""
     }
 
-    if (diff === 0) {
+    if (targetMinutes - currentMinutes <=0) {
         return "Время наступило!";
     }
 
     const hours = Math.floor(diff / 60);
     const mins = diff % 60;
 
-    return `Осталось: ${hours} ч. ${mins} мин.`;
+    return `${prefix}: ${hours} ч. ${mins} мин.`;
 }
 
 export function getCurrentSlot(data: ISlot[]): ISlot {
@@ -106,33 +106,17 @@ export function getCurrentSlot(data: ISlot[]): ISlot {
     return data.find(slot => currentMinutes >= slot.start && currentMinutes < slot.end);
 }
 
-// function updateSkyDynamic(angle: number) {
-//     // 1. Координаты Киева
-//     const LAT = 50.4501;
-//     const LNG = 30.5234;
 
-//     // 2. Получаем угол солнца (используем функцию из предыдущих ответов)
-//     //const angle = getSunPosition(new Date(), LAT, LNG);
+export function timerFormatHtml(time: string){
+  const chars = [...time];
 
-//     // 3. Нормализация угла от -63 до +63 в диапазон [0, 1]
-//     const t = Math.max(0, Math.min(1, (angle + 63) / (63 + 63)));
 
-//     // 4. Цвета (переведенные в RGB)
-//     // #281a3b -> rgb(40, 26, 59)
-//     // #fff7e0 -> rgb(255, 247, 224)
-//     const start = { r: 40, g: 26, b: 59 };
-//     const end = { r: 255, g: 247, b: 224 };
+  return '<div class="time-line">'+chars.reduce((acc, v) => {
+    const syleClass = isNumeric(v) ? 'digit' : 'char';
+    return acc + `<div class="${syleClass}">${v}</div>`
+  }, '')+ '</div>'
+}
 
-//     // 5. Интерполяция
-//     const r = Math.round(start.r + (end.r - start.r) * t);
-//     const g = Math.round(start.g + (end.g - start.g) * t);
-//     const b = Math.round(start.b + (end.b - start.b) * t);
-
-//     const color = `rgb(${r}, ${g}, ${b})`;
-
-//     // 6. Передаем в CSS переменную
-//     document.documentElement.style.setProperty('--sky-color', color);
-// }
-
-// Запуск
-//updateSkyDynamic();
+function isNumeric(val: string) {
+  return !isNaN(parseFloat(val));
+}

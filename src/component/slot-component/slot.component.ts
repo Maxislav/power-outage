@@ -1,6 +1,6 @@
 import { AutoSubscription, Component, Viewchild } from "@app/decorator";
 import template from "./slot.component.html?raw";
-import { filter, Subscription, tap, timer } from "rxjs";
+import { filter, firstValueFrom, Subscription, tap, timer } from "rxjs";
 import { EslotType, ISlot } from "@app/model";
 import { formatMinutes, timeUntil } from "@app/helper";
 
@@ -23,8 +23,8 @@ export class SlotController {
     [EslotType.NOTPLANNED]: "Свет есть",
   };
 
-  init(selector?: string) {
-    return this;
+  async init(selector?: string) {
+    return Promise.resolve();
   }
 
   setData(data: ISlot): SlotController {
@@ -55,11 +55,19 @@ export class SlotController {
         if (this.active) {
           this.slotEl.classList.add("active");
         }
+        if (this.active && data.type === EslotType.DEFINITE) {
+          //this.slotEl.classList.add("active");
+          this.untilEl.innerText = timeUntil(data.start, "");
+        }
 
-        if (this.isNext) {
-          this.untilEl.innerText = timeUntil(data.start);
+        if (this.isNext && data.type === EslotType.NOTPLANNED) {
+          this.untilEl.innerText = timeUntil(data.start, "Еще");
+        }
+        if (this.isNext && data.type === EslotType.DEFINITE) {
+          this.untilEl.innerText = timeUntil(data.start, "Осталось");
         }
       })
     );
   }
+  destroy() {}
 }
