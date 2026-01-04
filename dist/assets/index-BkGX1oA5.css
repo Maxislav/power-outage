@@ -19,13 +19,13 @@ a:hover {
   color: #535bf2;
 }
 @property --sky-color-top {
-  syntax: '<color>';
+  syntax: "<color>";
   initial-value: #000;
   /* любой начальный цвет */
   inherits: false;
 }
 @property --sky-color-bottom {
-  syntax: '<color>';
+  syntax: "<color>";
   initial-value: #000;
   inherits: false;
 }
@@ -57,6 +57,8 @@ body,
   padding: 1px;
   box-sizing: border-box;
   background-color: #ccc;
+  border-radius: 10px;
+  overflow: hidden;
 }
 .shutdown__area-name {
   text-align: center;
@@ -69,12 +71,12 @@ body,
 .shutdown__title {
   color: wheat;
   text-shadow: 0 0 2px white, 0 0 5px red;
+  margin-top: 10px;
 }
 .shutdown__column {
   display: grid;
-  grid-template-rows: 1fr 1fr;
-  height: 120px;
-  background-color: white;
+  grid-template-rows: 2fr 1fr;
+  height: 100px;
   min-width: 0;
   row-gap: 1px;
   background-color: #ccc;
@@ -94,16 +96,16 @@ body,
   height: 100%;
 }
 .shutdown__value--work {
-  background-color: #bdf0ff;
+  background-color: #feffb9;
 }
 .shutdown__value--hide {
   background-color: red;
 }
 .shutdown__value--first {
-  background: linear-gradient(to right, red 50%, #bdf0ff 50%);
+  background: linear-gradient(to right, red 50%, #feffb9 50%);
 }
 .shutdown__value--second {
-  background: linear-gradient(to left, red 50%, #bdf0ff 50%);
+  background: linear-gradient(to left, red 50%, #feffb9 50%);
 }
 .shutdown__refresh {
   width: 100%;
@@ -113,16 +115,40 @@ body,
   left: 0;
   padding: 0 10px;
 }
-.shutdown__refresh button {
+.shutdown__refresh .button {
+  text-align: center;
+  border-radius: 10px;
   width: 100%;
   padding: 10px 10px;
-  background-color: #ff00e9;
+  background-color: #745d83;
   color: white;
-  text-shadow: 0 0 3px wheat, 0 0 3px wheat, 0 0 3px wheat;
+  text-shadow: 0 0 3px wheat;
 }
 .shutdown__update-time {
   font-weight: bold;
   color: wheat;
   text-shadow: 0 0 2px white, 0 0 5px red;
+}
+.shutdown__slots {
+  display: flex;
+  flex-direction: column;
+  row-gap: 10px;
+  margin-top: 10px;
+}
+.slot {
+  border: 1px solid wheat;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: wheat;
+  box-shadow: 0 0 10px wheat;
+  background: #eeaeca;
+  background: linear-gradient(270deg, #c789a4 0%, #94bbe9 100%);
+}
+.slot.active {
+  background: linear-gradient(270deg, #eeaeca 0%, #94bbe9 100%);
+}
+.slot__time-container {
+  display: flex;
+  justify-content: space-between;
 }
 /*# sourceMappingURL=style.css.map */

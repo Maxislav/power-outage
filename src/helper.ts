@@ -1,3 +1,5 @@
+import { ISlot } from "./model";
+
 export function getSunPosition(date: Date, lat: number, lng: number): number {
   const rad = Math.PI / 180;
 
@@ -58,6 +60,50 @@ export function getSunColor(angle: number, top = true): string {
   const toHex = (c: number) => c.toString(16).padStart(2, "0");
 
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+}
+export function formatMinutes(totalMinutes: number): string {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = Math.round(totalMinutes % 60);
+
+  // Преобразуем числа в строки и добавляем ведущий ноль
+  const hDisplay = String(hours).padStart(2, '0');
+  const mDisplay = String(minutes).padStart(2, '0');
+
+  return `${hDisplay}:${mDisplay}`;
+}
+
+export function timeUntil(targetMinutes: number): string {
+    // Получаем текущее время в минутах от начала дня
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    // Вычисляем разницу с учетом 1440 минут в сутках
+    // (targetMinutes - currentMinutes + 1440) % 1440
+    let diff = (targetMinutes - currentMinutes + 1440) % 1440;
+
+    if(diff<0){
+        return ""
+    }
+
+    if (diff === 0) {
+        return "Время наступило!";
+    }
+
+    const hours = Math.floor(diff / 60);
+    const mins = diff % 60;
+
+    return `Осталось: ${hours} ч. ${mins} мин.`;
+}
+
+export function getCurrentSlot(data: ISlot[]): ISlot {
+    // 1. Получаем текущее время
+    const now = new Date();
+    
+    // 2. Считаем сколько минут прошло с начала дня
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    // 3. Ищем слот, где текущие минуты >= start и < end
+    return data.find(slot => currentMinutes >= slot.start && currentMinutes < slot.end);
 }
 
 // function updateSkyDynamic(angle: number) {

@@ -916,7 +916,7 @@ var EMPTY = new Observable(function(subscriber) {
   return subscriber.complete();
 });
 function isScheduler(value) {
-  return isFunction(value.schedule);
+  return value && isFunction(value.schedule);
 }
 var isArrayLike = (function(x) {
   return x && typeof x.length === "number" && typeof x !== "function";
@@ -1271,11 +1271,14 @@ function isValidDate(value) {
   return value instanceof Date && !isNaN(value);
 }
 function timer(dueTime, intervalOrScheduler, scheduler) {
+  if (dueTime === void 0) {
+    dueTime = 0;
+  }
   if (scheduler === void 0) {
     scheduler = async;
   }
   var intervalDuration = -1;
-  {
+  if (intervalOrScheduler != null) {
     if (isScheduler(intervalOrScheduler)) {
       scheduler = intervalOrScheduler;
     } else {
@@ -1298,6 +1301,14 @@ function timer(dueTime, intervalOrScheduler, scheduler) {
         }
       }
     }, due);
+  });
+}
+function filter(predicate, thisArg) {
+  return operate(function(source, subscriber) {
+    var index = 0;
+    source.subscribe(createOperatorSubscriber(subscriber, function(value) {
+      return predicate.call(thisArg, value, index++) && subscriber.next(value);
+    }));
   });
 }
 function take(count) {
@@ -1363,51 +1374,53 @@ function AutoSubscription() {
   };
 }
 function Component(props) {
-  return function(constructor) {
-    console.log("constructor.name", constructor.name);
-    const section = document.createElement("section");
-    const originalInit = constructor.prototype.init;
-    const originalDestroy = constructor.prototype.destroy;
-    let mainSub;
-    constructor.prototype.destroy = function() {
-      section.remove();
-      mainSub.unsubscribe();
-      if (originalDestroy) {
-        return originalDestroy.apply(this, []);
+  return function(originalConstructor, context) {
+    return class extends originalConstructor {
+      rootElement;
+      sectionElement;
+      __rootElement;
+      __mainSub;
+      __section;
+      AUTO_SUBSCRIBTION = originalConstructor.prototype["AUTO_SUBSCRIBTION"] || [];
+      VIEW_CHILD_REFS = originalConstructor.prototype["VIEW_CHILD_REFS"] || [];
+      constructor(...args) {
+        super(...args);
       }
-    };
-    console.log();
-    constructor.prototype.init = async function(selector) {
-      mainSub = new Subscription();
-      this.rootElement = document.querySelector(selector);
-      const refSub = this["AUTO_SUBSCRIBTION"] || [];
-      if (this.rootElement) {
-        section.style.display = "contents";
-        section.innerHTML = props.template;
-        this.rootElement.appendChild(section);
+      // Теперь TS знает, что super.init существует
+      init(...args) {
+        const selector = args[0];
+        this.__mainSub = new Subscription();
+        this.__rootElement = document.querySelector(selector);
+        this.rootElement = this.__rootElement;
+        this.__section = document.createElement("section");
+        this.__section.style.display = "contents";
+        this.__section.innerHTML = props.template;
+        this.sectionElement = this.__section;
+        const refSub = this["AUTO_SUBSCRIBTION"] || [];
         const refs = this["VIEW_CHILD_REFS"] || [];
         refs.forEach((ref) => {
-          const found = this.rootElement.querySelector(`[\\#${ref.selector}]`);
+          const found = this.__section.querySelector(`[\\#${ref.selector}]`);
           if (found) {
             this[ref.propertyKey] = found;
           }
         });
-        constructor.prototype.child = {};
-        console.log(`[Авто-рендер]: Шаблон успешно вставлен.`);
-      } else {
-        console.warn(`[Ошибка]: Элемент ${selector} не найден.`);
-      }
-      if (originalInit) {
-        const rr = await originalInit.apply(this, [selector]);
+        if (this.__rootElement) {
+          this.__rootElement.appendChild(this.__section);
+        }
         refSub.forEach((ref) => {
-          mainSub.add(this[ref.functionName]().subscribe());
+          this.__mainSub.add(this[ref.functionName]().subscribe());
         });
-        return rr;
+        return super.init(...args);
+      }
+      destroy(...args) {
+        this.__section.remove();
+        this.__mainSub.unsubscribe();
+        return super.destroy(...args);
       }
     };
   };
 }
-const html = '<div class="shutdown">\n  <div class="shutdown__area-name">3.1</div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">Завтра</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__update-time">\n    Время получения данных <span #updatedOn></span>\n  </div>\n  <div class="shutdown__refresh">\n    <button #refresh>Обновить</button>\n  </div>\n</div>\n';
+const html = '<div class="shutdown">\n  <div class="shutdown__area-name">3.1</div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">Завтра</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__slots" #slots></div>\n\n  <div class="shutdown__refresh">\n    <div class="shutdown__update-time">\n      Время получения данных <span #updatedOn></span>\n    </div>\n    <div class="button" #refresh>Обновить</button>\n  </div>\n</div>\n';
 var ExceptionCode;
 (function(ExceptionCode2) {
   ExceptionCode2["Unimplemented"] = "UNIMPLEMENTED";
@@ -1944,6 +1957,11 @@ const capGet = async () => {
   console.log("Response:", response.data);
   return JSON.parse(response.data);
 };
+var EslotType = /* @__PURE__ */ ((EslotType2) => {
+  EslotType2["DEFINITE"] = "Definite";
+  EslotType2["NOTPLANNED"] = "NotPlanned";
+  return EslotType2;
+})(EslotType || {});
 var token = /d{1,4}|D{3,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|W{1,2}|[LlopSZN]|"[^"]*"|'[^']*'/g;
 var timezone = /\b(?:[A-Z]{1,3}[A-Z][TC])(?:[-+]\d{4})?|((?:Australian )?(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time)\b/g;
 var timezoneClip = /[^-+\dA-Z]/g;
@@ -2179,6 +2197,110 @@ function getSunColor(angle, top = true) {
   const toHex = (c) => c.toString(16).padStart(2, "0");
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
+function formatMinutes(totalMinutes) {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = Math.round(totalMinutes % 60);
+  const hDisplay = String(hours).padStart(2, "0");
+  const mDisplay = String(minutes).padStart(2, "0");
+  return `${hDisplay}:${mDisplay}`;
+}
+function timeUntil(targetMinutes) {
+  const now = /* @__PURE__ */ new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  let diff = (targetMinutes - currentMinutes + 1440) % 1440;
+  if (diff < 0) {
+    return "";
+  }
+  if (diff === 0) {
+    return "Время наступило!";
+  }
+  const hours = Math.floor(diff / 60);
+  const mins = diff % 60;
+  return `Осталось: ${hours} ч. ${mins} мин.`;
+}
+function getCurrentSlot(data) {
+  const now = /* @__PURE__ */ new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  return data.find((slot) => currentMinutes >= slot.start && currentMinutes < slot.end);
+}
+const template = '<div class="slot" #slot>\n  <div class="slot__title" #name>назва</div>\n  <div class="slot__time-container">\n    <div class="slot__time" #time>время</div>\n    <div class="slot__until" #until></div>\n  </div>\n</div>\n';
+var __defProp$1 = Object.defineProperty;
+var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
+var __decorateClass$1 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$1(target, key) : target;
+  for (var i = decorators.length - 1, decorator; i >= 0; i--)
+    if (decorator = decorators[i])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp$1(target, key, result);
+  return result;
+};
+let SlotController = class {
+  sectionElement;
+  nameEl;
+  timeEl;
+  untilEl;
+  slotEl;
+  slotData;
+  active = false;
+  isNext = false;
+  hashMap = {
+    [EslotType.DEFINITE]: "Запланировано отключение",
+    [EslotType.NOTPLANNED]: "Свет есть"
+  };
+  init(selector) {
+    return this;
+  }
+  setData(data) {
+    this.slotData = data;
+    return this;
+  }
+  setActive(active) {
+    this.active = active;
+    return this;
+  }
+  setIsNext(isNext) {
+    this.isNext = isNext;
+    return this;
+  }
+  calcSub() {
+    return timer(2, 20 * 1e3).pipe(
+      filter(() => !!this.slotData),
+      tap(() => {
+        const data = this.slotData;
+        this.nameEl.innerText = this.hashMap[data.type];
+        this.timeEl.innerText = `${formatMinutes(data.start)}-${formatMinutes(
+          data.end
+        )}`;
+        if (this.active) {
+          this.slotEl.classList.add("active");
+        }
+        if (this.isNext) {
+          this.untilEl.innerText = timeUntil(data.start);
+        }
+      })
+    );
+  }
+};
+__decorateClass$1([
+  Viewchild("name")
+], SlotController.prototype, "nameEl", 2);
+__decorateClass$1([
+  Viewchild("time")
+], SlotController.prototype, "timeEl", 2);
+__decorateClass$1([
+  Viewchild("until")
+], SlotController.prototype, "untilEl", 2);
+__decorateClass$1([
+  Viewchild("slot")
+], SlotController.prototype, "slotEl", 2);
+__decorateClass$1([
+  AutoSubscription()
+], SlotController.prototype, "calcSub", 1);
+SlotController = __decorateClass$1([
+  Component({
+    template
+  })
+], SlotController);
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __decorateClass = (decorators, target, key, kind) => {
@@ -2195,11 +2317,13 @@ let RootComponent = class {
   tomorrowEl;
   refreshEl;
   updatedOnEl;
+  slotsEl;
   SEC_IN_DAY = 86400;
   init(selector) {
     this.refreshEl.addEventListener("click", (e) => {
       this.todayEl.innerHTML = "";
       this.tomorrowEl.innerHTML = "";
+      this.slotsEl.innerHTML = "";
       this.myFetch().pipe(take(1)).subscribe();
     });
   }
@@ -2215,7 +2339,6 @@ let RootComponent = class {
         );
         const skyColorTop = getSunColor(sunAngle);
         const skyColorBottom = getSunColor(sunAngle, false);
-        console.log(sunAngle);
         this.rootElement.style.setProperty("--sky-color-top", skyColorTop);
         this.rootElement.style.setProperty(
           "--sky-color-bottom",
@@ -2237,6 +2360,7 @@ let RootComponent = class {
         console.log(today);
         this.render(slotsToday, this.todayEl);
         this.render(slotsTomorrow, this.tomorrowEl);
+        this.renderSlots(slotsToday);
       })
     );
   }
@@ -2248,9 +2372,23 @@ let RootComponent = class {
       return myFetch();
     }
   }
-  checkSlots(slots, time) {
-    return slots.find((slot) => {
-      return slot.start / 60 <= time && time < slot.end / 60;
+  renderSlots(slots) {
+    console.log(slots);
+    const currentSlot = getCurrentSlot(slots);
+    const currentIndex = slots.findIndex((slot) => slot === currentSlot);
+    slots.forEach((slot, index) => {
+      const slotCtrl = new SlotController().init();
+      slotCtrl.sectionElement;
+      this.slotsEl.appendChild(slotCtrl.sectionElement);
+      slotCtrl.setData(slot);
+      if (index == currentIndex) {
+        slotCtrl.setActive(true);
+      }
+      if (currentIndex + 1 == index) {
+        slotCtrl.setIsNext(true);
+      }
+      slot.start;
+      slot.end;
     });
   }
   render(slots, el) {
@@ -2267,7 +2405,7 @@ let RootComponent = class {
       hhKeyEl.classList.add("shutdown__key");
       hhKeyEl.innerHTML = `${key}-${key + 1}`;
       const hhValueEl = document.createElement("div");
-      if (firstSlot.type === "NotPlanned" && secondSlot.type === "NotPlanned") {
+      if (firstSlot.type === EslotType.NOTPLANNED && secondSlot.type === EslotType.NOTPLANNED) {
         hhValueEl.classList.add("shutdown__value", "shutdown__value--work");
       }
       if (firstSlot.type === "NotPlanned" && secondSlot.type === "Definite") {
@@ -2284,6 +2422,11 @@ let RootComponent = class {
       el.appendChild(rowEl);
     }
   }
+  checkSlots(slots, time) {
+    return slots.find((slot) => {
+      return slot.start / 60 <= time && time < slot.end / 60;
+    });
+  }
 };
 __decorateClass([
   Viewchild("today")
@@ -2297,6 +2440,9 @@ __decorateClass([
 __decorateClass([
   Viewchild("updatedOn")
 ], RootComponent.prototype, "updatedOnEl", 2);
+__decorateClass([
+  Viewchild("slots")
+], RootComponent.prototype, "slotsEl", 2);
 __decorateClass([
   AutoSubscription()
 ], RootComponent.prototype, "calcAngle", 1);
@@ -2367,7 +2513,7 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
   });
 };
 const App = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-BTcoOgQu.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
+  web: () => __vitePreload(() => import("./web-DTqtlrOm.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
 });
 class MyCapacitorAppController {
   init() {
@@ -2392,4 +2538,4 @@ new RootComponent().init("#app");
 export {
   WebPlugin as W
 };
-//# sourceMappingURL=index-B_wCh8Hf.js.map
+//# sourceMappingURL=index-DBHK2SwU.js.map

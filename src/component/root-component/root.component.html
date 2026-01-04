@@ -8,10 +8,13 @@
   <div class="shutdown__today">
     <div class="shutdown__area-schedule" #tomorrow></div>
   </div>
-  <div class="shutdown__update-time">
-    Время получения данных <span #updatedOn></span>
-  </div>
+  <div class="shutdown__title">Сегодня</div>
+  <div class="shutdown__slots" #slots></div>
+
   <div class="shutdown__refresh">
-    <button #refresh>Обновить</button>
+    <div class="shutdown__update-time">
+      Время получения данных <span #updatedOn></span>
+    </div>
+    <div class="button" #refresh>Обновить</button>
   </div>
 </div>

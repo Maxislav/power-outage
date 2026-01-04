@@ -8,10 +8,15 @@ export enum EGpv{
     "first" = 'first'
 }
 
+export enum EslotType{
+    DEFINITE = "Definite",
+    NOTPLANNED = "NotPlanned"
+}
+
 export interface ISlot{
     start: number,
     end: number,
-    type: string
+    type: EslotType
 }
 
 export interface IDay{
