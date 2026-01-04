@@ -1,36 +1,17 @@
 <div class="shutdown">
-
-
-    <div class="shutdown__title">
-        Сегодя
-    </div>
-    <div class="shutdown__today">
-        <div class="shutdown__area-name">
-            3.1
-        </div>
-        <div class="shutdown__area-schedule" #today>
-
-        </div>
-        
-    </div>
-    <div class="shutdown__title">
-        Завтра
-    </div>
-    <div class="shutdown__today">
-        <div class="shutdown__area-name">
-            3.1
-        </div>
-       
-        <div class="shutdown__area-schedule" #tomorrow>
-
-        </div>
-    </div>
-    <div class="shutdown__refresh">
-        <div class="shutdown__update-time">
-            Время обновления <span #updatedOn></span>
-        </div>
-        <button #refresh>
-            Обновить данные
-        </button>
-    </div>
+  <div class="shutdown__area-name">3.1</div>
+  <div class="shutdown__title">Сегодня</div>
+  <div class="shutdown__today">
+    <div class="shutdown__area-schedule" #today></div>
+  </div>
+  <div class="shutdown__title">Завтра</div>
+  <div class="shutdown__today">
+    <div class="shutdown__area-schedule" #tomorrow></div>
+  </div>
+  <div class="shutdown__update-time">
+    Время получения данных <span #updatedOn></span>
+  </div>
+  <div class="shutdown__refresh">
+    <button #refresh>Обновить</button>
+  </div>
 </div>

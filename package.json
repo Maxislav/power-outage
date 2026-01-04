@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite --open",
+    "node:v": "which node && node -v",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "server:dev": "node src/server.cjs",
     "build:github": "npm run build",
     "ncc": "ncc",
     "build:server": "ncc build src/server.cjs -o dist/server -s",
+    "cap:sync": "ncc build src/server.cjs -o dist/server -s",
     "build:prod": "npm run build && npm run build:server",
     "build:copy:android": "npm run build && npx capacitor copy android --inline"
   },
