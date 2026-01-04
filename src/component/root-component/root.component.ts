@@ -2,7 +2,7 @@ import { AutoSubscription, Component, Viewchild } from "@app/decorator";
 import html from "./root.component.html?raw";
 import { capGet, myFetch } from "@app/request";
 import { distinctUntilChanged, from, map, take, tap, timer } from "rxjs";
-import { EGpv, EslotType, IData, ISlot } from "@app/model";
+import { EGpv, EslotType, EStatus, IData, IDay, ISlot } from "@app/model";
 import { Capacitor } from "@capacitor/core";
 import dateFormat, { masks } from "dateformat";
 import { getCurrentSlot, getSunColor, getSunPosition, timerFormatHtml } from "@app/helper";
@@ -80,10 +80,10 @@ export class RootComponent {
         );
         const today = d["3.1"]["today"];
         const slotsToday = today.slots;
-        const slotsTomorrow = d["3.1"]["tomorrow"].slots;
-        console.log(today);
-        this.render(slotsToday, this.todayEl);
-        this.render(slotsTomorrow, this.tomorrowEl);
+        const tomorrow = d["3.1"]["tomorrow"]
+        console.log(d["3.1"]);
+        this.render(today, this.todayEl);
+        this.render(tomorrow, this.tomorrowEl);
         this.renderSlots(slotsToday);
       })
     );
@@ -124,7 +124,19 @@ export class RootComponent {
     });
   }
 
-  render(slots: ISlot[], el: HTMLElement): void {
+  render(day: IDay, el: HTMLElement): void {
+    const slots = day.slots;
+
+    if(day.status == EStatus.WAITINGFORSCHEDULE){
+        const div = document.createElement('div');
+
+        div.innerText = "Ожидаем обновления"
+        el.appendChild(div);
+        el.classList.add('shutdown__area-schedule--waiting')
+        return;
+    }
+
+
     for (let i = 0; i < 24; i++) {
       //const currentSlot = this.checkSlots(slots, i);
       const firstSlot = this.checkSlots(slots, i);

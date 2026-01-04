@@ -66,55 +66,59 @@ export function formatMinutes(totalMinutes: number): string {
   const minutes = Math.round(totalMinutes % 60);
 
   // Преобразуем числа в строки и добавляем ведущий ноль
-  const hDisplay = String(hours).padStart(2, '0');
-  const mDisplay = String(minutes).padStart(2, '0');
+  const hDisplay = String(hours).padStart(2, "0");
+  const mDisplay = String(minutes).padStart(2, "0");
 
   return `${hDisplay}:${mDisplay}`;
 }
 
 export function timeUntil(targetMinutes: number, prefix: string): string {
-    // Получаем текущее время в минутах от начала дня
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  // Получаем текущее время в минутах от начала дня
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-    // Вычисляем разницу с учетом 1440 минут в сутках
-    // (targetMinutes - currentMinutes + 1440) % 1440
-    let diff = (targetMinutes - currentMinutes + 1440) % 1440;
+  // Вычисляем разницу с учетом 1440 минут в сутках
+  // (targetMinutes - currentMinutes + 1440) % 1440
+  let diff = (targetMinutes - currentMinutes + 1440) % 1440;
 
-    if(diff<0){
-        return ""
-    }
+  if (diff < 0) {
+    return "";
+  }
 
-    if (targetMinutes - currentMinutes <=0) {
-        return "Время наступило!";
-    }
+  if (targetMinutes - currentMinutes <= 0) {
+    return "Время наступило!";
+  }
 
-    const hours = Math.floor(diff / 60);
-    const mins = diff % 60;
+  const hours = Math.floor(diff / 60);
+  const mins = diff % 60;
 
-    return `${prefix}: ${hours} ч. ${mins} мин.`;
+  return `${prefix}: ${hours} ч. ${mins} мин.`;
 }
 
 export function getCurrentSlot(data: ISlot[]): ISlot {
-    // 1. Получаем текущее время
-    const now = new Date();
-    
-    // 2. Считаем сколько минут прошло с начала дня
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  // 1. Получаем текущее время
+  const now = new Date();
 
-    // 3. Ищем слот, где текущие минуты >= start и < end
-    return data.find(slot => currentMinutes >= slot.start && currentMinutes < slot.end);
+  // 2. Считаем сколько минут прошло с начала дня
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  // 3. Ищем слот, где текущие минуты >= start и < end
+  return data.find(
+    (slot) => currentMinutes >= slot.start && currentMinutes < slot.end
+  );
 }
 
-
-export function timerFormatHtml(time: string){
+export function timerFormatHtml(time: string) {
   const chars = [...time];
 
-
-  return '<div class="time-line">'+chars.reduce((acc, v) => {
-    const syleClass = isNumeric(v) ? 'digit' : 'char';
-    return acc + `<div class="${syleClass}">${v}</div>`
-  }, '')+ '</div>'
+  return (
+    '<div class="time-line">' +
+    chars.reduce((acc, v) => {
+      const syleClass = isNumeric(v) ? "digit" : "char";
+      return acc + `<div class="time-cell ${syleClass}">${v}</div>`;
+    }, "") +
+    "</div>"
+  );
 }
 
 function isNumeric(val: string) {

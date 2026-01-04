@@ -13,6 +13,11 @@ export enum EslotType{
     NOTPLANNED = "NotPlanned"
 }
 
+export enum EStatus{
+    SCHEDULEAPPLIES = "ScheduleApplies",
+    WAITINGFORSCHEDULE =  "WaitingForSchedule"
+}
+
 export interface ISlot{
     start: number,
     end: number,
@@ -22,7 +27,7 @@ export interface ISlot{
 export interface IDay{
     date: string,
     slots: ISlot[],
-    status: string
+    status: EStatus
 }
 
 export interface ITodayTomorrow{

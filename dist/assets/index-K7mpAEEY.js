@@ -1450,7 +1450,7 @@ function Component(props) {
     };
   };
 }
-const html = '<div class="shutdown">\n  <div class="shutdown__area-container">\n    <div class="shutdown__area-name">3.1 </div>\n    <div class="shutdown__current-time" #currentTime></div>\n  </div>\n \n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">Завтра</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__slots" #slots></div>\n\n  <div class="shutdown__refresh">\n    <div class="shutdown__update-time">\n      Время получения данных <span #updatedOn></span>\n    </div>\n    <div class="button" #refresh>Обновить</button>\n  </div>\n</div>\n';
+const html = '<div class="shutdown">\n  <div class="shutdown__area-container">\n    <div class="shutdown__area-name">3.1 </div>\n    <div class="shutdown__current-time" #currentTime></div>\n  </div>\n \n  <div class="shutdown__title">График на Сегодня</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">График на Завтра</div>\n  <div class="shutdown__today">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__slots" #slots></div>\n  <div class="shutdown__empty-space"></div>\n\n  <div class="shutdown__refresh">\n    <div class="shutdown__update-time">\n      Время получения данных <span #updatedOn></span>\n    </div>\n    <div class="button" #refresh>Обновить</button>\n  </div>\n</div>\n';
 var ExceptionCode;
 (function(ExceptionCode2) {
   ExceptionCode2["Unimplemented"] = "UNIMPLEMENTED";
@@ -1992,6 +1992,11 @@ var EslotType = /* @__PURE__ */ ((EslotType2) => {
   EslotType2["NOTPLANNED"] = "NotPlanned";
   return EslotType2;
 })(EslotType || {});
+var EStatus = /* @__PURE__ */ ((EStatus2) => {
+  EStatus2["SCHEDULEAPPLIES"] = "ScheduleApplies";
+  EStatus2["WAITINGFORSCHEDULE"] = "WaitingForSchedule";
+  return EStatus2;
+})(EStatus || {});
 var token = /d{1,4}|D{3,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|W{1,2}|[LlopSZN]|"[^"]*"|'[^']*'/g;
 var timezone = /\b(?:[A-Z]{1,3}[A-Z][TC])(?:[-+]\d{4})?|((?:Australian )?(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time)\b/g;
 var timezoneClip = /[^-+\dA-Z]/g;
@@ -2251,13 +2256,15 @@ function timeUntil(targetMinutes, prefix) {
 function getCurrentSlot(data) {
   const now = /* @__PURE__ */ new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  return data.find((slot) => currentMinutes >= slot.start && currentMinutes < slot.end);
+  return data.find(
+    (slot) => currentMinutes >= slot.start && currentMinutes < slot.end
+  );
 }
 function timerFormatHtml(time) {
   const chars = [...time];
   return '<div class="time-line">' + chars.reduce((acc, v) => {
     const syleClass = isNumeric(v) ? "digit" : "char";
-    return acc + `<div class="${syleClass}">${v}</div>`;
+    return acc + `<div class="time-cell ${syleClass}">${v}</div>`;
   }, "") + "</div>";
 }
 function isNumeric(val) {
@@ -2418,10 +2425,10 @@ let RootComponent = class {
         );
         const today = d["3.1"]["today"];
         const slotsToday = today.slots;
-        const slotsTomorrow = d["3.1"]["tomorrow"].slots;
-        console.log(today);
-        this.render(slotsToday, this.todayEl);
-        this.render(slotsTomorrow, this.tomorrowEl);
+        const tomorrow = d["3.1"]["tomorrow"];
+        console.log(d["3.1"]);
+        this.render(today, this.todayEl);
+        this.render(tomorrow, this.tomorrowEl);
         this.renderSlots(slotsToday);
       })
     );
@@ -2455,7 +2462,15 @@ let RootComponent = class {
       slot.end;
     });
   }
-  render(slots, el) {
+  render(day, el) {
+    const slots = day.slots;
+    if (day.status == EStatus.WAITINGFORSCHEDULE) {
+      const div = document.createElement("div");
+      div.innerText = "Ожидаем обновления";
+      el.appendChild(div);
+      el.classList.add("shutdown__area-schedule--waiting");
+      return;
+    }
     for (let i = 0; i < 24; i++) {
       const firstSlot = this.checkSlots(slots, i);
       const secondSlot = this.checkSlots(slots, i + 0.5);
@@ -2583,7 +2598,7 @@ const __vitePreload = function preload(baseModule, deps, importerUrl) {
   });
 };
 const App = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-BNwdDCku.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
+  web: () => __vitePreload(() => import("./web-BAsaiqes.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
 });
 class MyCapacitorAppController {
   init() {
@@ -2608,4 +2623,4 @@ new RootComponent().init("#app");
 export {
   WebPlugin as W
 };
-//# sourceMappingURL=index-S-D852G_.js.map
+//# sourceMappingURL=index-K7mpAEEY.js.map

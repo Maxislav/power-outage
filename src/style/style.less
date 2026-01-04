@@ -66,6 +66,7 @@ body,
     var(--sky-color-bottom) 100%
   );
   transition: --sky-color-top 4s ease, --sky-color-bottom 1s ease;
+  overflow-y: auto;
 }
 /* #map { position: absolute; top: 0; bottom: 0; width: 100%; } */
 * {
@@ -84,6 +85,11 @@ body,
     background-color: #ccc;
     border-radius: 10px;
     overflow: hidden;
+    &--waiting {
+      grid-template-columns: 1fr;
+      background: linear-gradient(120deg, #ffb3d4 -70%, #94bbe9 100%);
+      padding: 10px;
+    }
   }
   &__area-container {
     .gold-text-style();
@@ -170,10 +176,13 @@ body,
       background: linear-gradient(to left, @out-lihgt 50%, @light-color 50%);
     }
   }
+  &__empty-space {
+    height: 100px;
+  }
   &__refresh {
     width: 100%;
     margin-top: 20px;
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     left: 0;
     padding: 0 10px;

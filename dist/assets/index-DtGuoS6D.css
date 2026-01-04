@@ -50,6 +50,7 @@ body,
   background: #8b26ff;
   background: linear-gradient(180deg, var(--sky-color-top) 0%, var(--sky-color-bottom) 100%);
   transition: --sky-color-top 4s ease, --sky-color-bottom 1s ease;
+  overflow-y: auto;
 }
 /* #map { position: absolute; top: 0; bottom: 0; width: 100%; } */
 * {
@@ -68,6 +69,11 @@ body,
   background-color: #ccc;
   border-radius: 10px;
   overflow: hidden;
+}
+.shutdown__area-schedule--waiting {
+  grid-template-columns: 1fr;
+  background: linear-gradient(120deg, #ffb3d4 -70%, #94bbe9 100%);
+  padding: 10px;
 }
 .shutdown__area-container {
   color: wheat;
@@ -147,10 +153,13 @@ body,
 .shutdown__value--second {
   background: linear-gradient(to left, red 50%, #feffb9 50%);
 }
+.shutdown__empty-space {
+  height: 100px;
+}
 .shutdown__refresh {
   width: 100%;
   margin-top: 20px;
-  position: absolute;
+  position: fixed;
   bottom: 20px;
   left: 0;
   padding: 0 10px;
