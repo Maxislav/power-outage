@@ -393,7 +393,7 @@ var Subscription = (function() {
   })();
   return Subscription2;
 })();
-Subscription.EMPTY;
+var EMPTY_SUBSCRIPTION = Subscription.EMPTY;
 function isSubscription(value) {
   return value instanceof Subscription || value && "closed" in value && isFunction(value.remove) && isFunction(value.add) && isFunction(value.unsubscribe);
 }
@@ -743,11 +743,263 @@ var OperatorSubscriber = (function(_super) {
   };
   return OperatorSubscriber2;
 })(Subscriber);
+var ObjectUnsubscribedError = createErrorClass(function(_super) {
+  return function ObjectUnsubscribedErrorImpl() {
+    _super(this);
+    this.name = "ObjectUnsubscribedError";
+    this.message = "object unsubscribed";
+  };
+});
+var Subject = (function(_super) {
+  __extends(Subject2, _super);
+  function Subject2() {
+    var _this = _super.call(this) || this;
+    _this.closed = false;
+    _this.currentObservers = null;
+    _this.observers = [];
+    _this.isStopped = false;
+    _this.hasError = false;
+    _this.thrownError = null;
+    return _this;
+  }
+  Subject2.prototype.lift = function(operator) {
+    var subject = new AnonymousSubject(this, this);
+    subject.operator = operator;
+    return subject;
+  };
+  Subject2.prototype._throwIfClosed = function() {
+    if (this.closed) {
+      throw new ObjectUnsubscribedError();
+    }
+  };
+  Subject2.prototype.next = function(value) {
+    var _this = this;
+    errorContext(function() {
+      var e_1, _a;
+      _this._throwIfClosed();
+      if (!_this.isStopped) {
+        if (!_this.currentObservers) {
+          _this.currentObservers = Array.from(_this.observers);
+        }
+        try {
+          for (var _b = __values(_this.currentObservers), _c = _b.next(); !_c.done; _c = _b.next()) {
+            var observer = _c.value;
+            observer.next(value);
+          }
+        } catch (e_1_1) {
+          e_1 = { error: e_1_1 };
+        } finally {
+          try {
+            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+          } finally {
+            if (e_1) throw e_1.error;
+          }
+        }
+      }
+    });
+  };
+  Subject2.prototype.error = function(err) {
+    var _this = this;
+    errorContext(function() {
+      _this._throwIfClosed();
+      if (!_this.isStopped) {
+        _this.hasError = _this.isStopped = true;
+        _this.thrownError = err;
+        var observers = _this.observers;
+        while (observers.length) {
+          observers.shift().error(err);
+        }
+      }
+    });
+  };
+  Subject2.prototype.complete = function() {
+    var _this = this;
+    errorContext(function() {
+      _this._throwIfClosed();
+      if (!_this.isStopped) {
+        _this.isStopped = true;
+        var observers = _this.observers;
+        while (observers.length) {
+          observers.shift().complete();
+        }
+      }
+    });
+  };
+  Subject2.prototype.unsubscribe = function() {
+    this.isStopped = this.closed = true;
+    this.observers = this.currentObservers = null;
+  };
+  Object.defineProperty(Subject2.prototype, "observed", {
+    get: function() {
+      var _a;
+      return ((_a = this.observers) === null || _a === void 0 ? void 0 : _a.length) > 0;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Subject2.prototype._trySubscribe = function(subscriber) {
+    this._throwIfClosed();
+    return _super.prototype._trySubscribe.call(this, subscriber);
+  };
+  Subject2.prototype._subscribe = function(subscriber) {
+    this._throwIfClosed();
+    this._checkFinalizedStatuses(subscriber);
+    return this._innerSubscribe(subscriber);
+  };
+  Subject2.prototype._innerSubscribe = function(subscriber) {
+    var _this = this;
+    var _a = this, hasError = _a.hasError, isStopped = _a.isStopped, observers = _a.observers;
+    if (hasError || isStopped) {
+      return EMPTY_SUBSCRIPTION;
+    }
+    this.currentObservers = null;
+    observers.push(subscriber);
+    return new Subscription(function() {
+      _this.currentObservers = null;
+      arrRemove(observers, subscriber);
+    });
+  };
+  Subject2.prototype._checkFinalizedStatuses = function(subscriber) {
+    var _a = this, hasError = _a.hasError, thrownError = _a.thrownError, isStopped = _a.isStopped;
+    if (hasError) {
+      subscriber.error(thrownError);
+    } else if (isStopped) {
+      subscriber.complete();
+    }
+  };
+  Subject2.prototype.asObservable = function() {
+    var observable2 = new Observable();
+    observable2.source = this;
+    return observable2;
+  };
+  Subject2.create = function(destination, source) {
+    return new AnonymousSubject(destination, source);
+  };
+  return Subject2;
+})(Observable);
+var AnonymousSubject = (function(_super) {
+  __extends(AnonymousSubject2, _super);
+  function AnonymousSubject2(destination, source) {
+    var _this = _super.call(this) || this;
+    _this.destination = destination;
+    _this.source = source;
+    return _this;
+  }
+  AnonymousSubject2.prototype.next = function(value) {
+    var _a, _b;
+    (_b = (_a = this.destination) === null || _a === void 0 ? void 0 : _a.next) === null || _b === void 0 ? void 0 : _b.call(_a, value);
+  };
+  AnonymousSubject2.prototype.error = function(err) {
+    var _a, _b;
+    (_b = (_a = this.destination) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.call(_a, err);
+  };
+  AnonymousSubject2.prototype.complete = function() {
+    var _a, _b;
+    (_b = (_a = this.destination) === null || _a === void 0 ? void 0 : _a.complete) === null || _b === void 0 ? void 0 : _b.call(_a);
+  };
+  AnonymousSubject2.prototype._subscribe = function(subscriber) {
+    var _a, _b;
+    return (_b = (_a = this.source) === null || _a === void 0 ? void 0 : _a.subscribe(subscriber)) !== null && _b !== void 0 ? _b : EMPTY_SUBSCRIPTION;
+  };
+  return AnonymousSubject2;
+})(Subject);
+var BehaviorSubject = (function(_super) {
+  __extends(BehaviorSubject2, _super);
+  function BehaviorSubject2(_value) {
+    var _this = _super.call(this) || this;
+    _this._value = _value;
+    return _this;
+  }
+  Object.defineProperty(BehaviorSubject2.prototype, "value", {
+    get: function() {
+      return this.getValue();
+    },
+    enumerable: false,
+    configurable: true
+  });
+  BehaviorSubject2.prototype._subscribe = function(subscriber) {
+    var subscription = _super.prototype._subscribe.call(this, subscriber);
+    !subscription.closed && subscriber.next(this._value);
+    return subscription;
+  };
+  BehaviorSubject2.prototype.getValue = function() {
+    var _a = this, hasError = _a.hasError, thrownError = _a.thrownError, _value = _a._value;
+    if (hasError) {
+      throw thrownError;
+    }
+    this._throwIfClosed();
+    return _value;
+  };
+  BehaviorSubject2.prototype.next = function(value) {
+    _super.prototype.next.call(this, this._value = value);
+  };
+  return BehaviorSubject2;
+})(Subject);
 var dateTimestampProvider = {
   now: function() {
-    return Date.now();
-  }
+    return (dateTimestampProvider.delegate || Date).now();
+  },
+  delegate: void 0
 };
+var ReplaySubject = (function(_super) {
+  __extends(ReplaySubject2, _super);
+  function ReplaySubject2(_bufferSize, _windowTime, _timestampProvider) {
+    if (_bufferSize === void 0) {
+      _bufferSize = Infinity;
+    }
+    if (_windowTime === void 0) {
+      _windowTime = Infinity;
+    }
+    if (_timestampProvider === void 0) {
+      _timestampProvider = dateTimestampProvider;
+    }
+    var _this = _super.call(this) || this;
+    _this._bufferSize = _bufferSize;
+    _this._windowTime = _windowTime;
+    _this._timestampProvider = _timestampProvider;
+    _this._buffer = [];
+    _this._infiniteTimeWindow = true;
+    _this._infiniteTimeWindow = _windowTime === Infinity;
+    _this._bufferSize = Math.max(1, _bufferSize);
+    _this._windowTime = Math.max(1, _windowTime);
+    return _this;
+  }
+  ReplaySubject2.prototype.next = function(value) {
+    var _a = this, isStopped = _a.isStopped, _buffer = _a._buffer, _infiniteTimeWindow = _a._infiniteTimeWindow, _timestampProvider = _a._timestampProvider, _windowTime = _a._windowTime;
+    if (!isStopped) {
+      _buffer.push(value);
+      !_infiniteTimeWindow && _buffer.push(_timestampProvider.now() + _windowTime);
+    }
+    this._trimBuffer();
+    _super.prototype.next.call(this, value);
+  };
+  ReplaySubject2.prototype._subscribe = function(subscriber) {
+    this._throwIfClosed();
+    this._trimBuffer();
+    var subscription = this._innerSubscribe(subscriber);
+    var _a = this, _infiniteTimeWindow = _a._infiniteTimeWindow, _buffer = _a._buffer;
+    var copy = _buffer.slice();
+    for (var i = 0; i < copy.length && !subscriber.closed; i += _infiniteTimeWindow ? 1 : 2) {
+      subscriber.next(copy[i]);
+    }
+    this._checkFinalizedStatuses(subscriber);
+    return subscription;
+  };
+  ReplaySubject2.prototype._trimBuffer = function() {
+    var _a = this, _bufferSize = _a._bufferSize, _timestampProvider = _a._timestampProvider, _buffer = _a._buffer, _infiniteTimeWindow = _a._infiniteTimeWindow;
+    var adjustedBufferSize = (_infiniteTimeWindow ? 1 : 2) * _bufferSize;
+    _bufferSize < Infinity && adjustedBufferSize < _buffer.length && _buffer.splice(0, _buffer.length - adjustedBufferSize);
+    if (!_infiniteTimeWindow) {
+      var now = _timestampProvider.now();
+      var last2 = 0;
+      for (var i = 1; i < _buffer.length && _buffer[i] <= now; i += 2) {
+        last2 = i;
+      }
+      last2 && _buffer.splice(0, last2 + 1);
+    }
+  };
+  return ReplaySubject2;
+})(Subject);
 var Action = (function(_super) {
   __extends(Action2, _super);
   function Action2(scheduler, work) {
@@ -917,6 +1169,15 @@ var EMPTY = new Observable(function(subscriber) {
 });
 function isScheduler(value) {
   return value && isFunction(value.schedule);
+}
+function last(arr) {
+  return arr[arr.length - 1];
+}
+function popScheduler(args) {
+  return isScheduler(last(args)) ? args.pop() : void 0;
+}
+function popNumber(args, defaultValue) {
+  return typeof last(args) === "number" ? args.pop() : defaultValue;
 }
 var isArrayLike = (function(x) {
   return x && typeof x.length === "number" && typeof x !== "function";
@@ -1278,6 +1539,144 @@ function map(project, thisArg) {
     }));
   });
 }
+var isArray = Array.isArray;
+function callOrApply(fn, args) {
+  return isArray(args) ? fn.apply(void 0, __spreadArray([], __read(args))) : fn(args);
+}
+function mapOneOrManyArgs(fn) {
+  return map(function(args) {
+    return callOrApply(fn, args);
+  });
+}
+function mergeInternals(source, subscriber, project, concurrent, onBeforeNext, expand, innerSubScheduler, additionalFinalizer) {
+  var buffer = [];
+  var active = 0;
+  var index = 0;
+  var isComplete = false;
+  var checkComplete = function() {
+    if (isComplete && !buffer.length && !active) {
+      subscriber.complete();
+    }
+  };
+  var outerNext = function(value) {
+    return active < concurrent ? doInnerSub(value) : buffer.push(value);
+  };
+  var doInnerSub = function(value) {
+    active++;
+    var innerComplete = false;
+    innerFrom(project(value, index++)).subscribe(createOperatorSubscriber(subscriber, function(innerValue) {
+      {
+        subscriber.next(innerValue);
+      }
+    }, function() {
+      innerComplete = true;
+    }, void 0, function() {
+      if (innerComplete) {
+        try {
+          active--;
+          var _loop_1 = function() {
+            var bufferedValue = buffer.shift();
+            if (innerSubScheduler) ;
+            else {
+              doInnerSub(bufferedValue);
+            }
+          };
+          while (buffer.length && active < concurrent) {
+            _loop_1();
+          }
+          checkComplete();
+        } catch (err) {
+          subscriber.error(err);
+        }
+      }
+    }));
+  };
+  source.subscribe(createOperatorSubscriber(subscriber, outerNext, function() {
+    isComplete = true;
+    checkComplete();
+  }));
+  return function() {
+  };
+}
+function mergeMap(project, resultSelector, concurrent) {
+  if (concurrent === void 0) {
+    concurrent = Infinity;
+  }
+  if (isFunction(resultSelector)) {
+    return mergeMap(function(a, i) {
+      return map(function(b, ii) {
+        return resultSelector(a, b, i, ii);
+      })(innerFrom(project(a, i)));
+    }, concurrent);
+  } else if (typeof resultSelector === "number") {
+    concurrent = resultSelector;
+  }
+  return operate(function(source, subscriber) {
+    return mergeInternals(source, subscriber, project, concurrent);
+  });
+}
+function mergeAll(concurrent) {
+  if (concurrent === void 0) {
+    concurrent = Infinity;
+  }
+  return mergeMap(identity, concurrent);
+}
+var nodeEventEmitterMethods = ["addListener", "removeListener"];
+var eventTargetMethods = ["addEventListener", "removeEventListener"];
+var jqueryMethods = ["on", "off"];
+function fromEvent(target, eventName, options, resultSelector) {
+  if (isFunction(options)) {
+    resultSelector = options;
+    options = void 0;
+  }
+  if (resultSelector) {
+    return fromEvent(target, eventName, options).pipe(mapOneOrManyArgs(resultSelector));
+  }
+  var _a = __read(isEventTarget(target) ? eventTargetMethods.map(function(methodName) {
+    return function(handler) {
+      return target[methodName](eventName, handler, options);
+    };
+  }) : isNodeStyleEventEmitter(target) ? nodeEventEmitterMethods.map(toCommonHandlerRegistry(target, eventName)) : isJQueryStyleEventEmitter(target) ? jqueryMethods.map(toCommonHandlerRegistry(target, eventName)) : [], 2), add = _a[0], remove = _a[1];
+  if (!add) {
+    if (isArrayLike(target)) {
+      return mergeMap(function(subTarget) {
+        return fromEvent(subTarget, eventName, options);
+      })(innerFrom(target));
+    }
+  }
+  if (!add) {
+    throw new TypeError("Invalid event target");
+  }
+  return new Observable(function(subscriber) {
+    var handler = function() {
+      var args = [];
+      for (var _i = 0; _i < arguments.length; _i++) {
+        args[_i] = arguments[_i];
+      }
+      return subscriber.next(1 < args.length ? args : args[0]);
+    };
+    add(handler);
+    return function() {
+      return remove(handler);
+    };
+  });
+}
+function toCommonHandlerRegistry(target, eventName) {
+  return function(methodName) {
+    return function(handler) {
+      return target[methodName](eventName, handler);
+    };
+  };
+}
+function isNodeStyleEventEmitter(target) {
+  return isFunction(target.addListener) && isFunction(target.removeListener);
+}
+function isJQueryStyleEventEmitter(target) {
+  return isFunction(target.on) && isFunction(target.off);
+}
+function isEventTarget(target) {
+  return isFunction(target.addEventListener) && isFunction(target.removeEventListener);
+}
 function timer(dueTime, intervalOrScheduler, scheduler) {
   if (dueTime === void 0) {
     dueTime = 0;
@@ -1310,6 +1709,16 @@ function timer(dueTime, intervalOrScheduler, scheduler) {
       }
     }, due);
   });
+}
+function merge() {
+  var args = [];
+  for (var _i = 0; _i < arguments.length; _i++) {
+    args[_i] = arguments[_i];
+  }
+  var scheduler = popScheduler(args);
+  var concurrent = popNumber(args, Infinity);
+  var sources = args;
+  return !sources.length ? EMPTY : sources.length === 1 ? innerFrom(sources[0]) : mergeAll(concurrent)(from(sources, scheduler));
 }
 function filter(predicate, thisArg) {
   return operate(function(source, subscriber) {
@@ -1354,6 +1763,30 @@ function distinctUntilChanged(comparator, keySelector) {
 }
 function defaultCompare(a, b) {
   return a === b;
+}
+function switchMap(project, resultSelector) {
+  return operate(function(source, subscriber) {
+    var innerSubscriber = null;
+    var index = 0;
+    var isComplete = false;
+    var checkComplete = function() {
+      return isComplete && !innerSubscriber && subscriber.complete();
+    };
+    source.subscribe(createOperatorSubscriber(subscriber, function(value) {
+      innerSubscriber === null || innerSubscriber === void 0 ? void 0 : innerSubscriber.unsubscribe();
+      var innerIndex = 0;
+      var outerIndex = index++;
+      innerFrom(project(value, outerIndex)).subscribe(innerSubscriber = createOperatorSubscriber(subscriber, function(innerValue) {
+        return subscriber.next(resultSelector ? resultSelector(value, innerValue, outerIndex, innerIndex++) : innerValue);
+      }, function() {
+        innerSubscriber = null;
+        checkComplete();
+      }));
+    }, function() {
+      isComplete = true;
+      checkComplete();
+    }));
+  });
 }
 function tap(observerOrNext, error, complete) {
   var tapObserver = isFunction(observerOrNext) || error || complete ? { next: observerOrNext, error, complete } : observerOrNext;
@@ -1433,13 +1866,13 @@ function Component(props) {
             this[ref.propertyKey] = found;
           }
         });
+        if (this.__rootElement) {
+          this.__rootElement.appendChild(this.__section);
+        }
         const originalInit = await super.init(...args);
         refSub.forEach((ref) => {
           this.__mainSub.add(this[ref.functionName]().subscribe());
         });
-        if (this.__rootElement) {
-          this.__rootElement.appendChild(this.__section);
-        }
         return originalInit;
       }
       destroy(...args) {
@@ -1450,7 +1883,32 @@ function Component(props) {
     };
   };
 }
-const html = '<div class="shutdown">\n  <div class="shutdown__area-container">\n    <div class="shutdown__area-name">3.1 </div>\n    <div class="shutdown__current-time" #currentTime></div>\n  </div>\n \n  <div class="shutdown__title">График на Сегодня</div>\n  <div class="shutdown__day">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">График на Завтра</div>\n  <div class="shutdown__day">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__slots" #slots></div>\n  <div class="shutdown__empty-space"></div>\n\n  <div class="shutdown__refresh">\n    <div class="shutdown__update-time">\n      Время получения данных <span #updatedOn></span>\n    </div>\n    <div class="button" #refresh>Обновить</button>\n  </div>\n</div>\n';
+function Service() {
+  return function(originalConstructor, context) {
+    return class extends originalConstructor {
+      __mainSub;
+      AUTO_SUBSCRIBTION = originalConstructor.prototype["AUTO_SUBSCRIBTION"] || [];
+      constructor(...args) {
+        super(...args);
+      }
+      // Теперь TS знает, что super.init существует
+      async init(...args) {
+        this.__mainSub = new Subscription();
+        const refSub = this["AUTO_SUBSCRIBTION"] || [];
+        const originalInit = await super.init(...args);
+        refSub.forEach((ref) => {
+          this.__mainSub.add(this[ref.functionName]().subscribe());
+        });
+        return originalInit;
+      }
+      destroy(...args) {
+        this.__mainSub.unsubscribe();
+        return super.destroy(...args);
+      }
+    };
+  };
+}
+const html = '<div class="shutdown">\n  <div class="shutdown__area-container">\n    \n    <div class="shutdown__current-time" #currentTime></div>\n\n    <div class="shutdown__area-selector" #areaSelector> </div>\n  </div>\n \n  <div class="shutdown__title">График на Сегодня</div>\n  <div class="shutdown__day">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">График на Завтра</div>\n  <div class="shutdown__day">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__slots" #slots></div>\n  <div class="shutdown__empty-space"></div>\n\n  <div class="shutdown__refresh">\n    <div class="shutdown__update-time">\n      Время получения данных <span #updatedOn></span>\n    </div>\n    <div class="button" #refresh>Обновить</button>\n  </div>\n</div>\n';
 var ExceptionCode;
 (function(ExceptionCode2) {
   ExceptionCode2["Unimplemented"] = "UNIMPLEMENTED";
@@ -1957,16 +2415,17 @@ registerPlugin("SystemBars", {
   web: () => new SystemBarsPluginWeb()
 });
 const REQ_URL = {
-  prod: "https://165.232.46.174:5710/shutdown"
+  prod: "https://165.232.46.174:5712/shutdown"
 };
-async function myFetch() {
+async function myFetch(params = {}) {
+  const queryParams = `?slot=${params.slot}&origin=${params.origin}`;
   let reqUrl;
   {
     console.log("Running in production mode");
     reqUrl = REQ_URL.prod;
   }
   try {
-    const response = await fetch(reqUrl);
+    const response = await fetch(reqUrl + queryParams);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -1977,9 +2436,10 @@ async function myFetch() {
     return {};
   }
 }
-const capGet = async () => {
+const capGet = async (params = {}) => {
+  const queryParams = `?slot=${params.slot}&origin=${params.origin}`;
   const options = {
-    url: REQ_URL.prod,
+    url: REQ_URL.prod + queryParams,
     headers: { "Content-Type": "application/json" }
     // params: { user: '123' },
   };
@@ -2270,15 +2730,15 @@ function timerFormatHtml(time) {
 function isNumeric(val) {
   return !isNaN(parseFloat(val));
 }
-const template = '<div class="slot" #slot>\n  <div class="slot__title" #name>назва</div>\n  <div class="slot__time-container">\n    <div class="slot__time" #time>время</div>\n    <div class="slot__until" #until></div>\n  </div>\n</div>\n';
-var __defProp$1 = Object.defineProperty;
-var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
-var __decorateClass$1 = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$1(target, key) : target;
+const template$1 = '<div class="slot" #slot>\n  <div class="slot__title" #name>назва</div>\n  <div class="slot__time-container">\n    <div class="slot__time" #time>время</div>\n    <div class="slot__until" #until></div>\n  </div>\n</div>\n';
+var __defProp$3 = Object.defineProperty;
+var __getOwnPropDesc$3 = Object.getOwnPropertyDescriptor;
+var __decorateClass$3 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$3(target, key) : target;
   for (var i = decorators.length - 1, decorator; i >= 0; i--)
     if (decorator = decorators[i])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$1(target, key, result);
+  if (kind && result) __defProp$3(target, key, result);
   return result;
 };
 let SlotController = class {
@@ -2336,26 +2796,285 @@ let SlotController = class {
   destroy() {
   }
 };
-__decorateClass$1([
+__decorateClass$3([
   Viewchild("name")
 ], SlotController.prototype, "nameEl", 2);
-__decorateClass$1([
+__decorateClass$3([
   Viewchild("time")
 ], SlotController.prototype, "timeEl", 2);
-__decorateClass$1([
+__decorateClass$3([
   Viewchild("until")
 ], SlotController.prototype, "untilEl", 2);
-__decorateClass$1([
+__decorateClass$3([
   Viewchild("slot")
 ], SlotController.prototype, "slotEl", 2);
-__decorateClass$1([
+__decorateClass$3([
   AutoSubscription()
 ], SlotController.prototype, "calcSub", 1);
-SlotController = __decorateClass$1([
+SlotController = __decorateClass$3([
+  Component({
+    template: template$1
+  })
+], SlotController);
+const arealList = [
+  {
+    id: 3,
+    slot: "2.1",
+    origin: "city"
+  },
+  {
+    id: 0,
+    slot: "3.1",
+    origin: "city"
+  },
+  {
+    id: 1,
+    slot: "2.2",
+    origin: "region"
+  }
+];
+const scriptRel = "modulepreload";
+const assetsURL = function(dep, importerUrl) {
+  return new URL(dep, importerUrl).href;
+};
+const seen = {};
+const __vitePreload = function preload(baseModule, deps, importerUrl) {
+  let promise = Promise.resolve();
+  if (deps && deps.length > 0) {
+    let allSettled = function(promises$2) {
+      return Promise.all(promises$2.map((p) => Promise.resolve(p).then((value$1) => ({
+        status: "fulfilled",
+        value: value$1
+      }), (reason) => ({
+        status: "rejected",
+        reason
+      }))));
+    };
+    const links = document.getElementsByTagName("link");
+    const cspNonceMeta = document.querySelector("meta[property=csp-nonce]");
+    const cspNonce = cspNonceMeta?.nonce || cspNonceMeta?.getAttribute("nonce");
+    promise = allSettled(deps.map((dep) => {
+      dep = assetsURL(dep, importerUrl);
+      if (dep in seen) return;
+      seen[dep] = true;
+      const isCss = dep.endsWith(".css");
+      const cssSelector = isCss ? '[rel="stylesheet"]' : "";
+      if (!!importerUrl) for (let i$1 = links.length - 1; i$1 >= 0; i$1--) {
+        const link$1 = links[i$1];
+        if (link$1.href === dep && (!isCss || link$1.rel === "stylesheet")) return;
+      }
+      else if (document.querySelector(`link[href="${dep}"]${cssSelector}`)) return;
+      const link = document.createElement("link");
+      link.rel = isCss ? "stylesheet" : scriptRel;
+      if (!isCss) link.as = "script";
+      link.crossOrigin = "";
+      link.href = dep;
+      if (cspNonce) link.setAttribute("nonce", cspNonce);
+      document.head.appendChild(link);
+      if (isCss) return new Promise((res, rej) => {
+        link.addEventListener("load", res);
+        link.addEventListener("error", () => rej(/* @__PURE__ */ new Error(`Unable to preload CSS for ${dep}`)));
+      });
+    }));
+  }
+  function handlePreloadError(err$2) {
+    const e$1 = new Event("vite:preloadError", { cancelable: true });
+    e$1.payload = err$2;
+    window.dispatchEvent(e$1);
+    if (!e$1.defaultPrevented) throw err$2;
+  }
+  return promise.then((res) => {
+    for (const item of res || []) {
+      if (item.status !== "rejected") continue;
+      handlePreloadError(item.reason);
+    }
+    return baseModule().catch(handlePreloadError);
+  });
+};
+const Preferences = registerPlugin("Preferences", {
+  web: () => __vitePreload(() => import("./web-t49V5oda.js"), true ? [] : void 0, import.meta.url).then((m) => new m.PreferencesWeb())
+});
+var __defProp$2 = Object.defineProperty;
+var __getOwnPropDesc$2 = Object.getOwnPropertyDescriptor;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __decorateClass$2 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$2(target, key) : target;
+  for (var i = decorators.length - 1, decorator; i >= 0; i--)
+    if (decorator = decorators[i])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp$2(target, key, result);
+  return result;
+};
+var __publicField = (obj, key, value) => __defNormalProp(obj, key + "", value);
+let State = class {
+  currentArea$ = new ReplaySubject(1);
+  constructor() {
+    if (State.instance) {
+      return this;
+    }
+    State.instance = this;
+  }
+  static getInstance() {
+    if (!State.instance) {
+      State.instance = new State();
+    }
+    return State.instance;
+  }
+  async init() {
+    let { value } = await Preferences.get({ key: "areaId" });
+    console.log(value);
+    const v = value !== null ? Number(value) : 0;
+    const area = arealList.find((a) => a.id === v);
+    console.log(area);
+    this.setArea(area, false);
+  }
+  areaIdSub() {
+    return this.currentArea$.pipe(
+      filter((area) => area.emit && !!area.value),
+      switchMap((area) => {
+        return from(this.saveAreaId(area.value.id));
+      })
+    );
+  }
+  async saveAreaId(id) {
+    return await Preferences.set({
+      key: "areaId",
+      value: String(id)
+    });
+  }
+  getArea() {
+    return this.currentArea$.asObservable();
+  }
+  setArea(area, emit = true) {
+    this.currentArea$.next({
+      value: area,
+      emit
+    });
+  }
+  destroy() {
+  }
+};
+__publicField(State, "instance");
+__decorateClass$2([
+  AutoSubscription()
+], State.prototype, "areaIdSub", 1);
+State = __decorateClass$2([
+  Service()
+], State);
+const template = '\n<div class="area-selector" #areaSelector>\n    <div class="area-selector__current-name" #name>\n\n    </div>\n    <div class="area-selector__list" #list>\n        \n\n    </div>\n</div>';
+var __defProp$1 = Object.defineProperty;
+var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
+var __decorateClass$1 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$1(target, key) : target;
+  for (var i = decorators.length - 1, decorator; i >= 0; i--)
+    if (decorator = decorators[i])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp$1(target, key, result);
+  return result;
+};
+let SelectAreaCtrl = class {
+  sectionElement;
+  state = State.getInstance();
+  listEl;
+  nameEl;
+  areaSelectorEl;
+  areaItemElList = [];
+  events = [];
+  activeClass$ = new BehaviorSubject(false);
+  NAME_MAP = {
+    city: "Kyiv",
+    region: "Область"
+  };
+  init() {
+    this.areaItemElList = arealList.map((area) => {
+      const areaItem = document.createElement("div");
+      areaItem.setAttribute("data-area-id", String(area.id));
+      areaItem.classList.add("area-selector__item");
+      areaItem.innerText = `${this.NAME_MAP[area.origin]} ${area.slot}`;
+      this.listEl.appendChild(areaItem);
+      this.events.push(
+        fromEvent(areaItem, "click").pipe(
+          map(() => {
+            return area;
+          })
+        )
+      );
+      return areaItem;
+    });
+  }
+  activeClassSub() {
+    return this.activeClass$.pipe(
+      tap((v) => {
+        if (v) {
+          this.areaSelectorEl.classList.add("active");
+        } else {
+          this.areaSelectorEl.classList.remove("active");
+        }
+      })
+    );
+  }
+  nameElSub() {
+    return fromEvent(this.nameEl, "click").pipe(
+      tap((e) => {
+        e.stopPropagation();
+        this.activeClass$.next(true);
+      })
+    );
+  }
+  docSub() {
+    return fromEvent(document, "click").pipe(
+      tap(() => {
+        this.activeClass$.next(false);
+      })
+    );
+  }
+  selectSub() {
+    return merge(...this.events).pipe(
+      tap((area) => {
+        this.state.setArea(area);
+      })
+    );
+  }
+  cirrentAreaSub() {
+    return this.state.getArea().pipe(
+      map((a) => a.value),
+      tap((area) => {
+        this.nameEl.innerText = `${this.NAME_MAP[area.origin]} ${area.slot}`;
+      })
+    );
+  }
+  destroy() {
+  }
+};
+__decorateClass$1([
+  Viewchild("list")
+], SelectAreaCtrl.prototype, "listEl", 2);
+__decorateClass$1([
+  Viewchild("name")
+], SelectAreaCtrl.prototype, "nameEl", 2);
+__decorateClass$1([
+  Viewchild("areaSelector")
+], SelectAreaCtrl.prototype, "areaSelectorEl", 2);
+__decorateClass$1([
+  AutoSubscription()
+], SelectAreaCtrl.prototype, "activeClassSub", 1);
+__decorateClass$1([
+  AutoSubscription()
+], SelectAreaCtrl.prototype, "nameElSub", 1);
+__decorateClass$1([
+  AutoSubscription()
+], SelectAreaCtrl.prototype, "docSub", 1);
+__decorateClass$1([
+  AutoSubscription()
+], SelectAreaCtrl.prototype, "selectSub", 1);
+__decorateClass$1([
+  AutoSubscription()
+], SelectAreaCtrl.prototype, "cirrentAreaSub", 1);
+SelectAreaCtrl = __decorateClass$1([
   Component({
     template
   })
-], SlotController);
+], SelectAreaCtrl);
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __decorateClass = (decorators, target, key, kind) => {
@@ -2375,22 +3094,49 @@ let RootComponent = class {
   updatedOnEl;
   slotsEl;
   currentTimeEl;
+  areaSelectorEl;
   SEC_IN_DAY = 86400;
   dayEls = [];
+  state = State.getInstance();
+  currentArea$ = new ReplaySubject(1);
   slotList = [];
-  init(selector) {
-    this.refreshEl.addEventListener("click", (e) => {
-      this.todayEl.innerHTML = "";
-      this.tomorrowEl.innerHTML = "";
-      this.slotList.forEach((s) => {
-        s.destroy();
-      });
-      this.slotList = [];
-      this.myFetch().pipe(take(1)).subscribe();
+  async init(selector) {
+    this.currentArea$.next({
+      value: {
+        id: 0,
+        slot: "3.1",
+        origin: "city"
+      },
+      emit: false
     });
+    console.log(this.areaSelectorEl);
+    const selectAreaCtrl = new SelectAreaCtrl();
+    selectAreaCtrl.init();
+    this.areaSelectorEl.appendChild(selectAreaCtrl.sectionElement);
     this.dayEls = [
       ...this.sectionElement.querySelectorAll(".shutdown__day")
     ];
+  }
+  refreshSub() {
+    return fromEvent(this.refreshEl, "click").pipe(
+      tap(() => {
+        this.clearBeforeUpdate();
+      }),
+      switchMap(() => {
+        return this.myFetchSub().pipe(take(1));
+      })
+    );
+  }
+  clearBeforeUpdate() {
+    this.todayEl.innerHTML = "";
+    this.tomorrowEl.innerHTML = "";
+    this.todayEl.classList.remove("shutdown__area-schedule--waiting");
+    this.tomorrowEl.classList.remove("shutdown__area-schedule--waiting");
+    this.slotList.forEach((s) => {
+      s.destroy();
+    });
+    this.updatedOnEl.innerText = "...";
+    this.slotList = [];
   }
   currentTimeSub() {
     return timer(2, 200).pipe(
@@ -2421,20 +3167,36 @@ let RootComponent = class {
       })
     );
   }
-  myFetch() {
+  myFetchSub() {
     this.dayEls.forEach((el) => {
       el.classList.add("loading");
     });
-    return from(this.getReqFn()).pipe(
-      tap((d) => {
-        this.updatedOnEl.innerText = dateFormat(
-          new Date(d["3.1"].updatedOn),
-          "yyyy-mmm-dd HH:MM"
+    return this.state.getArea().pipe(
+      tap(() => {
+        this.clearBeforeUpdate();
+      }),
+      map((area) => area.value),
+      switchMap((area) => {
+        return from(this.getReqFn(area)).pipe(
+          map((data) => {
+            return {
+              slot: area.slot,
+              data
+            };
+          })
         );
-        const today = d["3.1"]["today"];
+      }),
+      tap(({ data: d, slot }) => {
+        if (d[slot].updatedOn) {
+          this.updatedOnEl.innerText = dateFormat(
+            new Date(d[slot].updatedOn),
+            "yyyy-mmm-dd HH:MM"
+          );
+        }
+        const today = d[slot]["today"];
         const slotsToday = today.slots;
-        const tomorrow = d["3.1"]["tomorrow"];
-        console.log(d["3.1"]);
+        const tomorrow = d[slot]["tomorrow"];
+        console.log(d[slot]);
         this.render(today, this.todayEl);
         this.render(tomorrow, this.tomorrowEl);
         this.renderSlots(slotsToday);
@@ -2444,12 +3206,12 @@ let RootComponent = class {
       })
     );
   }
-  getReqFn() {
+  getReqFn(area) {
     const platform = Capacitor.getPlatform();
     if (platform === "android") {
-      return capGet();
+      return capGet(area);
     } else {
-      return myFetch();
+      return myFetch(area);
     }
   }
   renderSlots(slots) {
@@ -2539,6 +3301,12 @@ __decorateClass([
   Viewchild("currentTime")
 ], RootComponent.prototype, "currentTimeEl", 2);
 __decorateClass([
+  Viewchild("areaSelector")
+], RootComponent.prototype, "areaSelectorEl", 2);
+__decorateClass([
+  AutoSubscription()
+], RootComponent.prototype, "refreshSub", 1);
+__decorateClass([
   AutoSubscription()
 ], RootComponent.prototype, "currentTimeSub", 1);
 __decorateClass([
@@ -2546,72 +3314,14 @@ __decorateClass([
 ], RootComponent.prototype, "calcAngle", 1);
 __decorateClass([
   AutoSubscription()
-], RootComponent.prototype, "myFetch", 1);
+], RootComponent.prototype, "myFetchSub", 1);
 RootComponent = __decorateClass([
   Component({
     template: html
   })
 ], RootComponent);
-const scriptRel = "modulepreload";
-const assetsURL = function(dep, importerUrl) {
-  return new URL(dep, importerUrl).href;
-};
-const seen = {};
-const __vitePreload = function preload(baseModule, deps, importerUrl) {
-  let promise = Promise.resolve();
-  if (deps && deps.length > 0) {
-    let allSettled = function(promises$2) {
-      return Promise.all(promises$2.map((p) => Promise.resolve(p).then((value$1) => ({
-        status: "fulfilled",
-        value: value$1
-      }), (reason) => ({
-        status: "rejected",
-        reason
-      }))));
-    };
-    const links = document.getElementsByTagName("link");
-    const cspNonceMeta = document.querySelector("meta[property=csp-nonce]");
-    const cspNonce = cspNonceMeta?.nonce || cspNonceMeta?.getAttribute("nonce");
-    promise = allSettled(deps.map((dep) => {
-      dep = assetsURL(dep, importerUrl);
-      if (dep in seen) return;
-      seen[dep] = true;
-      const isCss = dep.endsWith(".css");
-      const cssSelector = isCss ? '[rel="stylesheet"]' : "";
-      if (!!importerUrl) for (let i$1 = links.length - 1; i$1 >= 0; i$1--) {
-        const link$1 = links[i$1];
-        if (link$1.href === dep && (!isCss || link$1.rel === "stylesheet")) return;
-      }
-      else if (document.querySelector(`link[href="${dep}"]${cssSelector}`)) return;
-      const link = document.createElement("link");
-      link.rel = isCss ? "stylesheet" : scriptRel;
-      if (!isCss) link.as = "script";
-      link.crossOrigin = "";
-      link.href = dep;
-      if (cspNonce) link.setAttribute("nonce", cspNonce);
-      document.head.appendChild(link);
-      if (isCss) return new Promise((res, rej) => {
-        link.addEventListener("load", res);
-        link.addEventListener("error", () => rej(/* @__PURE__ */ new Error(`Unable to preload CSS for ${dep}`)));
-      });
-    }));
-  }
-  function handlePreloadError(err$2) {
-    const e$1 = new Event("vite:preloadError", { cancelable: true });
-    e$1.payload = err$2;
-    window.dispatchEvent(e$1);
-    if (!e$1.defaultPrevented) throw err$2;
-  }
-  return promise.then((res) => {
-    for (const item of res || []) {
-      if (item.status !== "rejected") continue;
-      handlePreloadError(item.reason);
-    }
-    return baseModule().catch(handlePreloadError);
-  });
-};
 const App = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-C2xmHg5q.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
+  web: () => __vitePreload(() => import("./web-80frkXbt.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
 });
 class MyCapacitorAppController {
   init() {
@@ -2632,8 +3342,9 @@ class MyCapacitorAppController {
   }
 }
 new MyCapacitorAppController().init();
+new State().init();
 new RootComponent().init("#app");
 export {
   WebPlugin as W
 };
-//# sourceMappingURL=index-B9vflMVU.js.map
+//# sourceMappingURL=index-BN_eodsJ.js.map

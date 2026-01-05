@@ -49,6 +49,7 @@ export function Controller() {
   };
 }
 
+
 export function Component(props: { template: string }) {
   // Описываем форму класса, который МЫ ОЖИДАЕМ (у него должен быть init)
   return function <
@@ -96,14 +97,13 @@ export function Component(props: { template: string }) {
             (this as any)[ref.propertyKey] = found;
           }
         });
-
+        if (this.__rootElement) {
+          this.__rootElement.appendChild(this.__section);
+        }
         const originalInit = await super.init(...args);
         refSub.forEach((ref: any) => {
           this.__mainSub.add((this as any)[ref.functionName]().subscribe());
         });
-        if (this.__rootElement) {
-          this.__rootElement.appendChild(this.__section);
-        }
 
         //console.log("Логика до вызова оригинального init");
         return originalInit;
@@ -117,3 +117,50 @@ export function Component(props: { template: string }) {
   };
 }
 
+
+export function Service() {
+  // Описываем форму класса, который МЫ ОЖИДАЕМ (у него должен быть init)
+  return function <
+    T extends {
+      new (...args: any[]): {
+        init(...args: any[]): any;
+        destroy(...args: any[]): any;
+      };
+    }
+  >(originalConstructor: T, context?: ClassDecoratorContext) {
+    return class extends originalConstructor {
+    
+      __mainSub: Subscription;
+      AUTO_SUBSCRIBTION =
+        originalConstructor.prototype["AUTO_SUBSCRIBTION"] || [];
+
+      constructor(...args: any[]) {
+        super(...args);
+      }
+
+      // Теперь TS знает, что super.init существует
+      async init(...args: any[]) {
+        // const originalInit = await super.init(...args)
+
+       // const selector = args[0];
+        this.__mainSub = new Subscription();
+       
+        const refSub = this["AUTO_SUBSCRIBTION"] || [];
+       
+        // debugger
+       
+        const originalInit = await super.init(...args);
+        refSub.forEach((ref: any) => {
+          this.__mainSub.add((this as any)[ref.functionName]().subscribe());
+        });
+
+        //console.log("Логика до вызова оригинального init");
+        return originalInit;
+      }
+      destroy(...args: any[]) {
+        this.__mainSub.unsubscribe();
+        return super.destroy(...args);
+      }
+    };
+  };
+}

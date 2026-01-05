@@ -1,8 +1,27 @@
 import { AutoSubscription, Component, Viewchild } from "@app/decorator";
 import html from "./root.component.html?raw";
 import { capGet, myFetch } from "@app/request";
-import { distinctUntilChanged, from, map, take, tap, timer } from "rxjs";
-import { EGpv, EslotType, EStatus, IData, IDay, ISlot } from "@app/model";
+import {
+  distinctUntilChanged,
+  firstValueFrom,
+  from,
+  fromEvent,
+  map,
+  ReplaySubject,
+  switchMap,
+  take,
+  tap,
+  timer,
+} from "rxjs";
+import {
+  EGpv,
+  EslotType,
+  EStatus,
+  IArea,
+  IData,
+  IDay,
+  ISlot,
+} from "@app/model";
 import { Capacitor } from "@capacitor/core";
 import dateFormat, { masks } from "dateformat";
 import {
@@ -12,6 +31,8 @@ import {
   timerFormatHtml,
 } from "@app/helper";
 import { SlotController } from "../slot-component/slot.component";
+import { State } from "@app/state/state";
+import { SelectAreaCtrl } from "../select-area-component/select-area.controller";
 
 @Component({
   template: html,
@@ -25,25 +46,63 @@ export class RootComponent {
   @Viewchild("updatedOn") private readonly updatedOnEl: HTMLElement;
   @Viewchild("slots") private readonly slotsEl: HTMLElement;
   @Viewchild("currentTime") private readonly currentTimeEl: HTMLElement;
+  @Viewchild("areaSelector") private readonly areaSelectorEl: HTMLElement;
   private readonly SEC_IN_DAY = 86400;
   dayEls: HTMLElement[] = [];
 
+  state = State.getInstance();
+
+  currentArea$ = new ReplaySubject<{
+    value: IArea;
+    emit: boolean;
+  }>(1);
+
   slotList: SlotController[] = [];
 
-  init(selector: string) {
-    this.refreshEl.addEventListener("click", (e) => {
-      this.todayEl.innerHTML = "";
-      this.tomorrowEl.innerHTML = "";
-      //this.slotsEl.innerHTML = "";
-      this.slotList.forEach((s: SlotController) => {
-        s.destroy();
-      });
-      this.slotList = [];
-      this.myFetch().pipe(take(1)).subscribe();
+  async init(selector: string) {
+    //await firstValueFrom(timer(500))
+
+    this.currentArea$.next({
+      value: {
+        id: 0,
+        slot: "3.1",
+        origin: "city",
+      },
+      emit: false,
     });
+
+    console.log(this.areaSelectorEl);
+    const selectAreaCtrl = new SelectAreaCtrl();
+    selectAreaCtrl.init();
+
+    this.areaSelectorEl.appendChild(selectAreaCtrl.sectionElement);
+
     this.dayEls = [
       ...this.sectionElement.querySelectorAll(".shutdown__day"),
     ] as HTMLElement[];
+  }
+  @AutoSubscription()
+  refreshSub() {
+    return fromEvent(this.refreshEl, "click").pipe(
+      tap(() => {
+        this.clearBeforeUpdate();
+      }),
+      switchMap(() => {
+        return this.myFetchSub().pipe(take(1));
+      })
+    );
+  }
+
+  clearBeforeUpdate() {
+    this.todayEl.innerHTML = "";
+    this.tomorrowEl.innerHTML = "";
+    this.todayEl.classList.remove("shutdown__area-schedule--waiting");
+    this.tomorrowEl.classList.remove("shutdown__area-schedule--waiting");
+    this.slotList.forEach((s: SlotController) => {
+      s.destroy();
+    });
+    this.updatedOnEl.innerText = '...'
+    this.slotList = [];
   }
 
   @AutoSubscription()
@@ -82,20 +141,38 @@ export class RootComponent {
   }
 
   @AutoSubscription()
-  myFetch() {
+  myFetchSub() {
     this.dayEls.forEach((el) => {
       el.classList.add("loading");
     });
-    return from(this.getReqFn()).pipe(
-      tap((d: IData) => {
-        this.updatedOnEl.innerText = dateFormat(
-          new Date(d["3.1"].updatedOn),
-          "yyyy-mmm-dd HH:MM"
+
+    return this.state.getArea().pipe(
+      tap(() => {
+          this.clearBeforeUpdate()
+      }),
+      map((area) => area.value),
+      switchMap((area) => {
+        return from(this.getReqFn(area)).pipe(
+          map((data) => {
+            return {
+              slot: area.slot,
+              data,
+            };
+          })
         );
-        const today = d["3.1"]["today"];
+      }),
+      tap(({ data: d, slot }: { data: IData; slot: string }) => {
+        if (d[slot].updatedOn) {
+          this.updatedOnEl.innerText = dateFormat(
+            new Date(d[slot].updatedOn),
+            "yyyy-mmm-dd HH:MM"
+          );
+        }
+
+        const today = d[slot]["today"];
         const slotsToday = today.slots;
-        const tomorrow = d["3.1"]["tomorrow"];
-        console.log(d["3.1"]);
+        const tomorrow = d[slot]["tomorrow"];
+        console.log(d[slot]);
         this.render(today, this.todayEl);
         this.render(tomorrow, this.tomorrowEl);
         this.renderSlots(slotsToday);
@@ -106,12 +183,12 @@ export class RootComponent {
     );
   }
 
-  getReqFn(): Promise<any> {
+  getReqFn(area: IArea): Promise<any> {
     const platform = Capacitor.getPlatform();
     if (platform === "android") {
-      return capGet();
+      return capGet(area);
     } else {
-      return myFetch();
+      return myFetch(area);
     }
   }
 

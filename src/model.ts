@@ -39,3 +39,9 @@ export interface ITodayTomorrow{
 export interface IData{
     [key: string]:  ITodayTomorrow
 }
+
+export interface IArea{
+    id: number
+    slot: string,
+    origin: 'city' | 'region'
+}

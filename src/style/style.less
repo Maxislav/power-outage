@@ -4,6 +4,15 @@
   color: wheat;
   text-shadow: 0 0 2px white, 0 0 5px red;
 }
+.gradient-main() {
+  background: linear-gradient(120deg, #ffb3d4 -70%, #94bbe9 100%);
+}
+.button-style() {
+  border: 1px solid #ffaf54;
+background-color: #745d83;
+  color: wheat;
+  text-shadow: 0 0 2px white, 0 0 5px red;
+}
 
 @font-face {
   font-family: "digital";
@@ -85,7 +94,8 @@ body,
 .shutdown {
   padding: 0 10px;
   &__day {
-    min-height: 104px;
+    //height: 104px;
+    // transition: height 4s ease;
     display: flex;
     align-items: center;
     border: 1px solid #ffaf54;
@@ -104,18 +114,23 @@ body,
     }
   }
   &__area-schedule {
-    display: grid;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 
-    grid-template-columns: repeat(24, 1fr); // Делим на 24 равные части
+    //grid-template-columns: repeat(24, 1fr); // Делим на 24 равные части
     column-gap: 1px;
     width: 100%;
+    min-height: 50px;
 
     //padding: 1px;
     box-sizing: border-box;
     //background-color: ;
 
     &--waiting {
-      grid-template-columns: 1fr;
+      display: flex;
+      height: 100%;
+      align-items: center;
       background: linear-gradient(120deg, #ffb3d4 -70%, #94bbe9 100%);
       padding: 10px;
     }
@@ -123,10 +138,11 @@ body,
   &__area-container {
     .gold-text-style();
     display: flex;
-    align-items: end;
+    align-items: center;
     justify-content: center;
     padding: 20px 0 10px;
     column-gap: 20px;
+    position: relative;
   }
   &__area-name {
     text-align: center;
@@ -168,6 +184,7 @@ body,
   }
 
   &__column {
+    flex: 1;
     display: grid;
     grid-template-rows: 2fr 1fr; // Две равные части по вертикали
     height: 100px; // Фиксированная высота, чтобы ячейки раскрылись
@@ -245,6 +262,11 @@ body,
     row-gap: 10px;
     //margin-top: 10px;
   }
+  &__area-selector {
+    position: absolute;
+    right: 0;
+    top: 20px;
+  }
 }
 .slot {
   border: 1px solid rgb(95, 85, 241);
@@ -265,5 +287,34 @@ body,
   &__time-container {
     display: flex;
     justify-content: space-between;
+  }
+}
+.area-selector {
+  position: relative;
+  width: 120px;
+  padding: 10px;
+  border: 1px solid #ffaf54;
+  border-radius: 10px;
+ .button-style();
+  &__list {
+    position: absolute;
+    top: 120%;
+    left: 0;
+    width: 100%;
+    display: none;
+  }
+  &.active {
+    .area-selector__list {
+      display: block;
+    }
+  }
+  &__current-name {
+    // .gradient-main();
+  }
+  &__item {
+    padding: 5px 10px;
+    border: 1px solid #ffaf54;
+    border-radius: 5px;
+    .button-style();
   }
 }
