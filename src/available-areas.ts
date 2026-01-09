@@ -3,7 +3,7 @@ import { IArea } from "./model";
 export const arealList: IArea[] = [
   {
     id: 3,
-    slot: "2.1",
+    slot: "1.2",
     origin: "city",
   },
   {

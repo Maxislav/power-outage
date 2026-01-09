@@ -1,4 +1,4 @@
-import { W as WebPlugin } from "./index-BN_eodsJ.js";
+import { W as WebPlugin } from "./index-CNE1x6pj.js";
 class PreferencesWeb extends WebPlugin {
   constructor() {
     super(...arguments);
@@ -70,4 +70,4 @@ class PreferencesWeb extends WebPlugin {
 export {
   PreferencesWeb
 };
-//# sourceMappingURL=web-t49V5oda.js.map
+//# sourceMappingURL=web-D7mdDoxz.js.map

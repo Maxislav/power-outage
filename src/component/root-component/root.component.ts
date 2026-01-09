@@ -52,26 +52,11 @@ export class RootComponent {
 
   state = State.getInstance();
 
-  currentArea$ = new ReplaySubject<{
-    value: IArea;
-    emit: boolean;
-  }>(1);
-
   slotList: SlotController[] = [];
 
   async init(selector: string) {
     //await firstValueFrom(timer(500))
 
-    this.currentArea$.next({
-      value: {
-        id: 0,
-        slot: "3.1",
-        origin: "city",
-      },
-      emit: false,
-    });
-
-    console.log(this.areaSelectorEl);
     const selectAreaCtrl = new SelectAreaCtrl();
     selectAreaCtrl.init();
 
@@ -101,7 +86,7 @@ export class RootComponent {
     this.slotList.forEach((s: SlotController) => {
       s.destroy();
     });
-    this.updatedOnEl.innerText = '...'
+    this.updatedOnEl.innerText = "...";
     this.slotList = [];
   }
 
@@ -148,7 +133,7 @@ export class RootComponent {
 
     return this.state.getArea().pipe(
       tap(() => {
-          this.clearBeforeUpdate()
+        this.clearBeforeUpdate();
       }),
       map((area) => area.value),
       switchMap((area) => {

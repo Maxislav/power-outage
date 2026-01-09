@@ -104,7 +104,7 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px 0 10px;
+  padding: 22px 0 10px;
   column-gap: 20px;
   position: relative;
 }
@@ -117,7 +117,7 @@ body,
 .shutdown__current-time {
   font-family: "digital", sans-serif;
   text-align: left;
-  font-size: 25px;
+  font-size: 28px;
   line-height: 30px;
 }
 .shutdown__current-time .time-line {
@@ -126,17 +126,17 @@ body,
 }
 .shutdown__current-time .char:nth-child(2 of .char) {
   font-size: 18px;
-  line-height: 24px;
+  line-height: 22px;
 }
 .shutdown__current-time .digit {
-  width: 12px;
+  width: 14px;
   text-align: end;
 }
 .shutdown__current-time .digit:nth-child(5 of .digit),
 .shutdown__current-time .digit:nth-child(6 of .digit) {
   font-size: 18px;
   width: 9px;
-  line-height: 24px;
+  line-height: 22px;
 }
 .shutdown__title {
   color: wheat;
@@ -220,7 +220,7 @@ body,
 .shutdown__area-selector {
   position: absolute;
   right: 0;
-  top: 20px;
+  top: 18px;
 }
 .slot {
   border: 1px solid #5f55f1;
