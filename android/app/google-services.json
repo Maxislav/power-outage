@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "866627755554",
+    "project_id": "propeerty-detail-test",
+    "storage_bucket": "propeerty-detail-test.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866627755554:android:980c0eb5a36e4cf894b47b",
+        "android_client_info": {
+          "package_name": "app.poweroutage.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8c2xpWo65hQiyC_cXNuYPCsVcdtidhsM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
