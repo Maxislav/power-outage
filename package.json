@@ -9,18 +9,19 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "server:dev": "node src/server.cjs",
+    "server:dev:reload": "nodemon src/server.cjs",
+    "server:eco:copy": "cp src/ecosystem.config.js dist-server/ecosystem.config.js",
     "build:github": "npm run build",
     "ncc": "ncc",
-    "build:server": "ncc build src/server.cjs -o dist/server -s",
-    "build:server-test": "ncc build src/test-server.cjs -o dist/test-server -s",
+    "build:server": "ncc build src/server.cjs -o dist-server -s",
     "cap:sync": "npx cap sync android",
     "build:prod": "npm run build && npm run build:server",
-    "build:copy:android": "npm run build && npx capacitor copy android --inline",
-    "test-server": "node src/test-server.cjs"
+    "build:copy:android": "npm run build && npx capacitor copy android --inline"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
     "less": "^4.5.1",
+    "nodemon": "^3.1.11",
     "typescript": "~5.9.3",
     "vite": "^7.2.4"
   },

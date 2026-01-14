@@ -28,6 +28,7 @@ import {
   getCurrentSlot,
   getSunColor,
   getSunPosition,
+  isObjectEmpty,
   timerFormatHtml,
 } from "@app/helper";
 import { SlotController } from "../slot-component/slot.component";
@@ -127,12 +128,11 @@ export class RootComponent {
 
   @AutoSubscription()
   myFetchSub() {
-    this.dayEls.forEach((el) => {
-      el.classList.add("loading");
-    });
-
     return this.state.getArea().pipe(
       tap(() => {
+        this.dayEls.forEach((el) => {
+          el.classList.add("loading");
+        });
         this.clearBeforeUpdate();
       }),
       map((area) => area.value),
@@ -147,7 +147,15 @@ export class RootComponent {
         );
       }),
       tap(({ data: d, slot }: { data: IData; slot: string }) => {
-        if (d[slot].updatedOn) {
+         this.dayEls.forEach((el) => {
+          el.classList.remove("loading");
+        });
+        if(isObjectEmpty(d)){
+          this.todayEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`
+          this.tomorrowEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`
+          return;
+        }
+        if (d[slot]?.updatedOn) {
           this.updatedOnEl.innerText = dateFormat(
             new Date(d[slot].updatedOn),
             "yyyy-mmm-dd HH:MM"
@@ -161,9 +169,7 @@ export class RootComponent {
         this.render(today, this.todayEl);
         this.render(tomorrow, this.tomorrowEl);
         this.renderSlots(slotsToday);
-        this.dayEls.forEach((el) => {
-          el.classList.remove("loading");
-        });
+       
       })
     );
   }

@@ -124,3 +124,14 @@ export function timerFormatHtml(time: string) {
 function isNumeric(val: string) {
   return !isNaN(parseFloat(val));
 }
+
+
+export function isObjectEmpty(obj: any) {
+  return (
+    obj && // Проверка на null и undefined
+    typeof obj === 'object' && // Проверка, что это объект
+    !Array.isArray(obj) && // Исключаем массивы (у них тоже есть ключи)
+    Object.keys(obj).length === 0 && // Проверка на отсутствие ключей
+    obj.constructor === Object // Проверка, что это "простой" объект (не Date, не Map)
+  );
+}

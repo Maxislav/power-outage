@@ -1,9 +1,9 @@
 import { IArea, IData } from "@app/model.ts";
 import { CapacitorHttp } from "@capacitor/core";
 const REQ_URL = {
-  // dev: "http://localhost:5714/shutdown", //?slot=3.1&origin=region
-  dev: "https://165.232.46.174:5712/shutdown",
-  prod: "https://165.232.46.174:5712/shutdown",
+   dev: "http://localhost:5714/shutdown", //?slot=3.1&origin=region
+  //dev: "https://165.232.46.174:5712/shutdown",
+  prod: "https://206.189.114.217:5712/shutdown",
 };
 
 export async function myFetch(params: Partial<IArea> = {}): Promise<IData> {
