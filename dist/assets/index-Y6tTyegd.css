@@ -56,10 +56,11 @@ body,
 #app {
   position: relative;
   background: #8b26ff;
-  background: linear-gradient(180deg, var(--sky-color-top) 0%, var(--sky-color-bottom) 100%);
+  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #fffcfc 4%, #fff6d6 6%, #f7d3b0 10%, #24d3ff 19%, #2469ff 30%, #1b0c49 50%, #0d0525 70%, #04000f 100%);
+  background-size: 200% 400%;
   /* Дополнительная настройка, чтобы солнце казалось объемнее */
   background-blend-mode: screen;
-  transition: --sky-color-top 4s ease, --sky-color-bottom 1s ease;
+  transition: background-position 0.3s ease;
   overflow-y: auto;
 }
 /* #map { position: absolute; top: 0; bottom: 0; width: 100%; } */

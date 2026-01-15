@@ -170,7 +170,7 @@ async function getCity() {
   return deferred.promise;
 }
 
-async function getRegion({ origin, slot }) {
+async function getRegion({ origin, slot }, acc) {
   const deferred = new Deferred();
 
   const options = {
@@ -196,29 +196,29 @@ async function getRegion({ origin, slot }) {
         );
         //r1g3-2
 
+        const shMenuList =
+          indexTpl.window.document.querySelectorAll(".shedule-menu>a");
+        const tomorrow = Array.from(shMenuList).find(
+          (el) => el.textContent?.toLowerCase().trim() === "завтра"
+        );
 
-
-        const shMenuList = indexTpl.window.document.querySelectorAll('.shedule-menu>a');
-        const tomorrow = Array.from(shMenuList).find(el => el.textContent?.toLowerCase().trim() === 'завтра');
-         
-        console.log(tomorrow)
+        //console.log(tomorrow)
+        if (tomorrow) {
+          const href = tomorrow.getAttribute("href");
+          console.log(href);
+        }
 
         let dateIso = null;
         try {
-          const dateText = indexTpl.window.document.querySelector(".description")?.textContent;
+          const dateText =
+            indexTpl.window.document.querySelector(".description")?.textContent;
           const regex =
             /(?<day>\d{2})\.(?<month>\d{2})\.(?<year>\d{4}) о (?<hours>\d{2}):(?<minutes>\d{2})/;
 
           const match = dateText.match(regex);
           const { day, month, year, hours, minutes } = match.groups;
 
-          const dateObj = new Date(
-            year,
-            month - 1,
-            day,
-            hours,
-            minutes
-          );
+          const dateObj = new Date(year, month - 1, day, hours, minutes);
           dateIso = dateObj.toISOString();
         } catch (e) {
           dateIso = null;
@@ -249,20 +249,25 @@ async function getRegion({ origin, slot }) {
               slots.push(timeObject);
             }
           });
-          deferred.resolve(
-            JSON.stringify({
-              [slot]: {
-                today: {
-                  slots,
-                  status: "ScheduleApplies",
-                },
-                tomorrow: {
-                  slots: [],
-                  status: "WaitingForSchedule",
-                },
-                updatedOn: dateIso,
+          const result = {
+            [slot]: {
+              today: {
+                slots,
+                status: "ScheduleApplies",
               },
-            })
+              tomorrow: {
+                slots: [],
+                status: "WaitingForSchedule",
+              },
+              updatedOn: dateIso,
+            },
+          };
+
+          if (!acc && tomorrow) {
+          }
+
+          deferred.resolve(
+            JSON.stringify(result)
           );
         } catch (e) {
           console.log("Error 267", e);

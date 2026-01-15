@@ -105,7 +105,7 @@ export class RootComponent {
   @AutoSubscription()
   calcAngle() {
     let i = 0;
-    return timer(0, 1000).pipe(
+    return timer(0, 10000).pipe(
       tap(() => {
         const sunAngle = getSunPosition(
           new Date(), // new Date(Date.now() + i * 60 * 60 * 1000),
@@ -113,6 +113,10 @@ export class RootComponent {
           50.45,
           30.5
         );
+        // 63 
+ 
+        document.getElementById('app').style.backgroundPosition = `50% ${(sunAngle+63)/2}%`
+        console.log(sunAngle)
         const skyColorTop = getSunColor(sunAngle);
         const skyColorBottom = getSunColor(sunAngle, false);
         //console.log(sunAngle);

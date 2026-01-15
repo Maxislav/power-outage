@@ -2915,10 +2915,10 @@ var ConsentStatus;
   ConsentStatus2["Denied"] = "DENIED";
 })(ConsentStatus || (ConsentStatus = {}));
 const FirebaseAnalytics = registerPlugin("FirebaseAnalytics", {
-  web: () => __vitePreload(() => import("./web-BC74-oYp.js"), true ? [] : void 0, import.meta.url).then((m) => new m.FirebaseAnalyticsWeb())
+  web: () => __vitePreload(() => import("./web-Smh22EYT.js"), true ? [] : void 0, import.meta.url).then((m) => new m.FirebaseAnalyticsWeb())
 });
 const Preferences = registerPlugin("Preferences", {
-  web: () => __vitePreload(() => import("./web-CaTTIMWj.js"), true ? [] : void 0, import.meta.url).then((m) => new m.PreferencesWeb())
+  web: () => __vitePreload(() => import("./web-BYMZmKFR.js"), true ? [] : void 0, import.meta.url).then((m) => new m.PreferencesWeb())
 });
 const getDefaultsFromPostinstall = () => void 0;
 var define_process_env_default = {};
@@ -6000,7 +6000,7 @@ let RootComponent = class {
     );
   }
   calcAngle() {
-    return timer(0, 1e3).pipe(
+    return timer(0, 1e4).pipe(
       tap(() => {
         const sunAngle = getSunPosition(
           /* @__PURE__ */ new Date(),
@@ -6009,6 +6009,8 @@ let RootComponent = class {
           50.45,
           30.5
         );
+        document.getElementById("app").style.backgroundPosition = `50% ${(sunAngle + 63) / 2}%`;
+        console.log(sunAngle);
         const skyColorTop = getSunColor(sunAngle);
         const skyColorBottom = getSunColor(sunAngle, false);
         this.rootElement.style.setProperty("--sky-color-top", skyColorTop);
@@ -6178,7 +6180,7 @@ RootComponent = __decorateClass([
   })
 ], RootComponent);
 const App = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-D6YBOqEp.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
+  web: () => __vitePreload(() => import("./web-CfbVNNTS.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
 });
 class MyCapacitorAppController {
   init() {
@@ -6212,4 +6214,4 @@ export {
   logEvent as l,
   setUserId as s
 };
-//# sourceMappingURL=index-DDBEbi-w.js.map
+//# sourceMappingURL=index-DAuRKzbx.js.map

@@ -79,23 +79,32 @@ body,
 #app {
   position: relative;
   background: #8b26ff;
-  background: linear-gradient(
-    180deg,
-    var(--sky-color-top) 0%,
-    var(--sky-color-bottom) 100%
-  );
+  // background: linear-gradient(
+  //   180deg,
+  //   var(--sky-color-top) 0%,
+  //   var(--sky-color-bottom) 100%
+  // );
   // background: radial-gradient(circle at 0 50%, #ffffff 0%, #4686fc 10%);
+
+  background: radial-gradient(
+    circle at 50% 50%,
+    #ffffff 0%,
+    #fffcfc 4%,
+    #fff6d6 6%,
+    #f7d3b0 10%,
+    #24d3ff 19%,
+    #2469ff 30%,
+    #1b0c49 50%,
+    #0d0525 70%,
+    #04000f 100%
+  );
+  background-size: 200% 400%;
 
   // background: radial-gradient(
   //   circle at 50% 100%,
-  //   rgba(255, 255, 255, 1) 0%,
-  //   rgba(255, 252, 252, 1) 10%,
-  //   rgba(255, 246, 214, 1) 13%,
-  //   rgba(247, 211, 176, 1) 25%,
-  //   rgba(36, 211, 255, 1) 51%,
-  //   rgba(36, 105, 255, 1) 78%,
-  //   rgba(15, 9, 33, 1) 96%,
-  //   rgba(21, 0, 74, 1) 100%
+  //   #ffffff 0%,
+
+  //   #15004a 50%
   // );
   // background:
   //   radial-gradient(circle at 50% 100%, rgba(255,255,224,0.8) 0%, rgba(255,165,0,0) 40%),
@@ -103,7 +112,8 @@ body,
 
   /* Дополнительная настройка, чтобы солнце казалось объемнее */
   background-blend-mode: screen;
-  transition: --sky-color-top 4s ease, --sky-color-bottom 1s ease;
+  //transition: --sky-color-top 4s ease, --sky-color-bottom 1s ease;
+  transition: background-position 0.3s ease;
   overflow-y: auto;
 }
 /* #map { position: absolute; top: 0; bottom: 0; width: 100%; } */

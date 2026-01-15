@@ -1,4 +1,4 @@
-import { W as WebPlugin } from "./index-DDBEbi-w.js";
+import { W as WebPlugin } from "./index-DAuRKzbx.js";
 class AppWeb extends WebPlugin {
   constructor() {
     super();
@@ -37,4 +37,4 @@ class AppWeb extends WebPlugin {
 export {
   AppWeb
 };
-//# sourceMappingURL=web-D6YBOqEp.js.map
+//# sourceMappingURL=web-CfbVNNTS.js.map
