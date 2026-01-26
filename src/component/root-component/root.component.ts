@@ -114,7 +114,7 @@ export class RootComponent {
     @AutoSubscription()
     calcAngle() {
         let i = 0;
-        return timer(1000).pipe(
+        return timer(1000,10000).pipe(
             tap(() => {
                 const sunAngle = getSunPosition(
                     new Date(), // new Date(Date.now() + i * 60 * 60 * 1000),
@@ -163,7 +163,7 @@ export class RootComponent {
                 this.dayEls.forEach((el) => {
                     el.classList.remove("loading");
                 });
-                if (isObjectEmpty(d)) {
+                if (isObjectEmpty(d) || isObjectEmpty(d[slot]) || d[slot].today?.slots?.length === 0 ) {
                     this.todayEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`
                     this.tomorrowEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`
                     return;
