@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "sourceMap": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "removeComments": false,
+    "rootDir": "./server/src",
+    "outDir": "server/dist-js",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./typings"
+    ],
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "./server/src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "server/cjs"
+  ],
+  "filesGlob": [
+  ]
+}

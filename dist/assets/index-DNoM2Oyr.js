@@ -1908,7 +1908,7 @@ function Service() {
     };
   };
 }
-const html = '<div class="shutdown">\n  <div class="shutdown__area-container">\n    \n    <div class="shutdown__current-time" #currentTime></div>\n\n    <div class="shutdown__area-selector" #areaSelector> </div>\n  </div>\n \n  <div class="shutdown__title">График на Сегодня</div>\n  <div class="shutdown__day">\n    <div class="shutdown__area-schedule" #today></div>\n  </div>\n  <div class="shutdown__title">График на Завтра</div>\n  <div class="shutdown__day">\n    <div class="shutdown__area-schedule" #tomorrow></div>\n  </div>\n  <div class="shutdown__title">Сегодня</div>\n  <div class="shutdown__slots" #slots></div>\n  <div class="shutdown__empty-space"></div>\n\n  <div class="shutdown__refresh">\n    <div class="shutdown__update-time">\n      Время получения данных <span #updatedOn></span>\n    </div>\n    <div class="button" #refresh>Обновить</button>\n  </div>\n</div>\n';
+const html = '<div class="shutdown">\r\n  <div class="shutdown__area-container">\r\n    \r\n    <div class="shutdown__current-time" #currentTime></div>\r\n\r\n    <div class="shutdown__area-selector" #areaSelector> </div>\r\n  </div>\r\n \r\n  <div class="shutdown__title">График на Сегодня</div>\r\n  <div class="shutdown__day">\r\n    <div class="shutdown__area-schedule" #today></div>\r\n  </div>\r\n  <div class="shutdown__title">График на Завтра</div>\r\n  <div class="shutdown__day">\r\n    <div class="shutdown__area-schedule" #tomorrow></div>\r\n  </div>\r\n  <div class="shutdown__title">Сегодня</div>\r\n  <div class="shutdown__slots" #slots></div>\r\n  <div class="shutdown__empty-space"></div>\r\n\r\n  <div class="shutdown__refresh">\r\n    <div class="shutdown__update-time">\r\n      Время получения данных <span #updatedOn></span>\r\n    </div>\r\n    <div class="button" #refresh>Обновить</button>\r\n  </div>\r\n</div>\r\n';
 var ExceptionCode;
 (function(ExceptionCode2) {
   ExceptionCode2["Unimplemented"] = "UNIMPLEMENTED";
@@ -2739,7 +2739,7 @@ function isObjectEmpty(obj) {
   Object.keys(obj).length === 0 && // Проверка на отсутствие ключей
   obj.constructor === Object;
 }
-const template$1 = '<div class="slot" #slot>\n  <div class="slot__title" #name>назва</div>\n  <div class="slot__time-container">\n    <div class="slot__time" #time>время</div>\n    <div class="slot__until" #until></div>\n  </div>\n</div>\n';
+const template$1 = '<div class="slot" #slot>\r\n  <div class="slot__title" #name>назва</div>\r\n  <div class="slot__time-container">\r\n    <div class="slot__time" #time>время</div>\r\n    <div class="slot__until" #until></div>\r\n  </div>\r\n</div>\r\n';
 var __defProp$3 = Object.defineProperty;
 var __getOwnPropDesc$3 = Object.getOwnPropertyDescriptor;
 var __decorateClass$3 = (decorators, target, key, kind) => {
@@ -2915,10 +2915,10 @@ var ConsentStatus;
   ConsentStatus2["Denied"] = "DENIED";
 })(ConsentStatus || (ConsentStatus = {}));
 const FirebaseAnalytics = registerPlugin("FirebaseAnalytics", {
-  web: () => __vitePreload(() => import("./web-Smh22EYT.js"), true ? [] : void 0, import.meta.url).then((m) => new m.FirebaseAnalyticsWeb())
+  web: () => __vitePreload(() => import("./web-hSmmZ7tz.js"), true ? [] : void 0, import.meta.url).then((m) => new m.FirebaseAnalyticsWeb())
 });
 const Preferences = registerPlugin("Preferences", {
-  web: () => __vitePreload(() => import("./web-BYMZmKFR.js"), true ? [] : void 0, import.meta.url).then((m) => new m.PreferencesWeb())
+  web: () => __vitePreload(() => import("./web-BxIwK6bZ.js"), true ? [] : void 0, import.meta.url).then((m) => new m.PreferencesWeb())
 });
 const getDefaultsFromPostinstall = () => void 0;
 var define_process_env_default = {};
@@ -3991,7 +3991,7 @@ function isVersionServiceProvider(provider) {
   return component?.type === "VERSION";
 }
 const name$q = "@firebase/app";
-const version$1$1 = "0.14.6";
+const version$1$1 = "0.14.7";
 const logger$1 = new Logger("@firebase/app");
 const name$p = "@firebase/app-compat";
 const name$o = "@firebase/analytics-compat";
@@ -4547,7 +4547,7 @@ function registerCoreComponents(variant) {
 }
 registerCoreComponents("");
 var name$2 = "firebase";
-var version$2 = "12.7.0";
+var version$2 = "12.8.0";
 registerVersion(name$2, version$2, "app");
 const name$1 = "@firebase/installations";
 const version$1 = "0.6.19";
@@ -5823,7 +5823,7 @@ __decorateClass$2([
 State = __decorateClass$2([
   Service()
 ], State);
-const template = '\n<div class="area-selector" #areaSelector>\n    <div class="area-selector__current-name" #name>\n\n    </div>\n    <div class="area-selector__list" #list>\n        \n\n    </div>\n</div>';
+const template = '\r\n<div class="area-selector" #areaSelector>\r\n    <div class="area-selector__current-name" #name>\r\n\r\n    </div>\r\n    <div class="area-selector__list" #list>\r\n        \r\n\r\n    </div>\r\n</div>';
 var __defProp$1 = Object.defineProperty;
 var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
 var __decorateClass$1 = (decorators, target, key, kind) => {
@@ -6180,7 +6180,7 @@ RootComponent = __decorateClass([
   })
 ], RootComponent);
 const App = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-CfbVNNTS.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
+  web: () => __vitePreload(() => import("./web-DEX4oBYG.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
 });
 class MyCapacitorAppController {
   init() {
@@ -6214,4 +6214,4 @@ export {
   logEvent as l,
   setUserId as s
 };
-//# sourceMappingURL=index-DAuRKzbx.js.map
+//# sourceMappingURL=index-DNoM2Oyr.js.map

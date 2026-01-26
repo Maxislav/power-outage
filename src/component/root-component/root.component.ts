@@ -3,11 +3,9 @@ import html from "./root.component.html?raw";
 import { capGet, myFetch } from "@app/request";
 import {
   distinctUntilChanged,
-  firstValueFrom,
   from,
   fromEvent,
   map,
-  ReplaySubject,
   switchMap,
   take,
   tap,
@@ -23,7 +21,7 @@ import {
   ISlot,
 } from "@app/model";
 import { Capacitor } from "@capacitor/core";
-import dateFormat, { masks } from "dateformat";
+import dateFormat from "dateformat";
 import {
   getCurrentSlot,
   getSunColor,

@@ -1,4 +1,4 @@
-import { W as WebPlugin, C as ConsentStatus, a as ConsentType, g as getAnalytics, s as setUserId, b as setUserProperties, l as logEvent, c as setAnalyticsCollectionEnabled, d as setConsent } from "./index-DAuRKzbx.js";
+import { W as WebPlugin, C as ConsentStatus, a as ConsentType, g as getAnalytics, s as setUserId, b as setUserProperties, l as logEvent, c as setAnalyticsCollectionEnabled, d as setConsent } from "./index-DNoM2Oyr.js";
 class FirebaseAnalyticsWeb extends WebPlugin {
   async getAppInstanceId() {
     throw this.unimplemented("Not implemented on web.");
@@ -81,4 +81,4 @@ class FirebaseAnalyticsWeb extends WebPlugin {
 export {
   FirebaseAnalyticsWeb
 };
-//# sourceMappingURL=web-Smh22EYT.js.map
+//# sourceMappingURL=web-hSmmZ7tz.js.map
