@@ -1,29 +1,30 @@
 <div class="shutdown">
-  <div class="shutdown__area-container">
-      <div class="shutdown__weather" #weather></div>
+    <div class="shutdown__area-container">
+        <div class="shutdown__weather" #weather></div>
 
-    
-    <div class="shutdown__current-time" #currentTime></div>
 
-    <div class="shutdown__area-selector" #areaSelector> </div>
-  </div>
- 
-  <div class="shutdown__title">График на Сегодня</div>
-  <div class="shutdown__day">
-    <div class="shutdown__area-schedule" #today></div>
-  </div>
-  <div class="shutdown__title">График на Завтра</div>
-  <div class="shutdown__day">
-    <div class="shutdown__area-schedule" #tomorrow></div>
-  </div>
-  <div class="shutdown__title">Сегодня</div>
-  <div class="shutdown__slots" #slots></div>
-  <div class="shutdown__empty-space"></div>
+        <div class="shutdown__current-time" #currentTime></div>
 
-  <div class="shutdown__refresh">
-    <div class="shutdown__update-time">
-      Время получения данных <span #updatedOn></span>
+        <div class="shutdown__area-selector" #areaSelector></div>
     </div>
-    <div class="button" #refresh>Обновить</button>
-  </div>
+
+    <div class="shutdown__title">График на Сегодня</div>
+    <div class="shutdown__day">
+        <div class="shutdown__area-schedule" #today></div>
+    </div>
+    <div class="shutdown__title">График на Завтра</div>
+    <div class="shutdown__day">
+        <div class="shutdown__area-schedule" #tomorrow></div>
+    </div>
+    <div class="shutdown__title">Сегодня</div>
+    <div class="shutdown__slots" #slots></div>
+    <div class="shutdown__empty-space"></div>
+
+    <div class="shutdown__refresh">
+        <div class="shutdown__update-time">
+            Время получения данных <span #updatedOn></span>
+        </div>
+        <div class="button" #refresh>Обновить</button>
+        </div>
+    </div>
 </div>
