@@ -32,6 +32,7 @@ import {
 import { SlotController } from "../slot-component/slot.component";
 import { State } from "@app/state/state";
 import { SelectAreaCtrl } from "../select-area-component/select-area.controller";
+import {WeatherComponent} from "@app/component/weather-component/weather.component.ts";
 
 @Component({
   template: html,
@@ -46,6 +47,7 @@ export class RootComponent {
   @Viewchild("slots") private readonly slotsEl: HTMLElement;
   @Viewchild("currentTime") private readonly currentTimeEl: HTMLElement;
   @Viewchild("areaSelector") private readonly areaSelectorEl: HTMLElement;
+  @Viewchild("weather") private readonly weatherEl: HTMLElement;
   private readonly SEC_IN_DAY = 86400;
   dayEls: HTMLElement[] = [];
 
@@ -64,6 +66,12 @@ export class RootComponent {
     this.dayEls = [
       ...this.sectionElement.querySelectorAll(".shutdown__day"),
     ] as HTMLElement[];
+
+    const weatherComponentCtrl = new WeatherComponent();
+    await weatherComponentCtrl.init()
+    this.weatherEl.appendChild(weatherComponentCtrl.sectionElement);
+
+
   }
   @AutoSubscription()
   refreshSub() {
@@ -103,10 +111,10 @@ export class RootComponent {
   @AutoSubscription()
   calcAngle() {
     let i = 0;
-    return timer(0, 10000).pipe(
+    return timer(1000).pipe(
       tap(() => {
         const sunAngle = getSunPosition(
-          new Date(), // new Date(Date.now() + i * 60 * 60 * 1000),
+             new Date(), // new Date(Date.now() + i * 60 * 60 * 1000),
           //new Date(Date.now() + i * 60 * 60 * 1000),
           50.45,
           30.5

@@ -2,7 +2,7 @@
 @out-lihgt: red;
 .gold-text-style() {
   color: wheat;
-  text-shadow: 0 0 2px white, 0 0 5px red;
+  text-shadow: 0 0 1px white, 0 0 3px #830000, 0 0 5px red;
 }
 .gradient-main() {
   background: linear-gradient(120deg, #ffb3d4 -70%, #94bbe9 100%);
@@ -87,7 +87,7 @@ body,
   // background: radial-gradient(circle at 0 50%, #ffffff 0%, #4686fc 10%);
 
   background: radial-gradient(
-    circle at 50% 50%,
+          ellipse 300% 40% at 50% 50%,
     #ffffff 0%,
     #fffcfc 4%,
     #fff6d6 6%,
@@ -99,6 +99,7 @@ body,
     #04000f 100%
   );
   background-size: 200% 400%;
+
 
   // background: radial-gradient(
   //   circle at 50% 100%,
@@ -122,6 +123,11 @@ body,
 }
 .shutdown {
   padding: 0 10px;
+  &__weather{
+    position: absolute;
+    left: 0;
+    top: 10px;
+  }
   &__day {
     //height: 104px;
     // transition: height 4s ease;

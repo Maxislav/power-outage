@@ -1,4 +1,40 @@
-@font-face {
+.weather {
+  /* Левый кружок */
+  /* Правый кружок */
+}
+.weather__temperature {
+  display: flex;
+}
+.weather .mini-cloud {
+  position: relative;
+  width: 50px;
+  height: 20px;
+  /* Основная часть стала ниже */
+  background: radial-gradient(circle at 50% 10%, #fff, #f2f2f2);
+  border-radius: 20px;
+  /* Центрируем в квадрате 50x50 */
+  margin-top: 20px;
+}
+.weather .mini-cloud::before,
+.weather .mini-cloud::after {
+  content: '';
+  position: absolute;
+  background: radial-gradient(circle at 50% 10%, #fff, #f2f2f2);
+  border-radius: 50%;
+}
+.weather .mini-cloud::before {
+  width: 25px;
+  height: 25px;
+  top: -15px;
+  left: 5px;
+}
+.weather .mini-cloud::after {
+  width: 20px;
+  height: 20px;
+  top: -10px;
+  right: 5px;
+}
+/*# sourceMappingURL=weather.component.css.map */@font-face {
   font-family: "digital";
   /* The format for .ttf files must be 'truetype' */
   src: url("./digital-7-Cnm38d_8.ttf") format("truetype");
@@ -56,7 +92,7 @@ body,
 #app {
   position: relative;
   background: #8b26ff;
-  background: radial-gradient(circle at 50% 50%, #ffffff 0%, #fffcfc 4%, #fff6d6 6%, #f7d3b0 10%, #24d3ff 19%, #2469ff 30%, #1b0c49 50%, #0d0525 70%, #04000f 100%);
+  background: radial-gradient(ellipse 300% 40% at 50% 50%, #ffffff 0%, #fffcfc 4%, #fff6d6 6%, #f7d3b0 10%, #24d3ff 19%, #2469ff 30%, #1b0c49 50%, #0d0525 70%, #04000f 100%);
   background-size: 200% 400%;
   /* Дополнительная настройка, чтобы солнце казалось объемнее */
   background-blend-mode: screen;
@@ -69,6 +105,11 @@ body,
 }
 .shutdown {
   padding: 0 10px;
+}
+.shutdown__weather {
+  position: absolute;
+  left: 0;
+  top: 18px;
 }
 .shutdown__day {
   display: flex;
@@ -104,12 +145,12 @@ body,
 }
 .shutdown__area-schedule-no-data {
   color: wheat;
-  text-shadow: 0 0 2px white, 0 0 5px red;
+  text-shadow: 0 0 1px white, 0 0 3px #830000, 0 0 5px red;
   padding: 0 10px;
 }
 .shutdown__area-container {
   color: wheat;
-  text-shadow: 0 0 2px white, 0 0 5px red;
+  text-shadow: 0 0 1px white, 0 0 3px #830000, 0 0 5px red;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -149,7 +190,7 @@ body,
 }
 .shutdown__title {
   color: wheat;
-  text-shadow: 0 0 2px white, 0 0 5px red;
+  text-shadow: 0 0 1px white, 0 0 3px #830000, 0 0 5px red;
   margin-top: 10px;
 }
 .shutdown__column {
@@ -209,7 +250,7 @@ body,
   user-select: none;
   border: 1px solid #ffaf54;
   color: wheat;
-  text-shadow: 0 0 2px white, 0 0 5px red;
+  text-shadow: 0 0 1px white, 0 0 3px #830000, 0 0 5px red;
 }
 .shutdown__refresh .button:active {
   box-shadow: inset 2px 2px 10px rgba(0, 0, 0, 0.8);
@@ -218,7 +259,7 @@ body,
 .shutdown__update-time {
   font-weight: bold;
   color: wheat;
-  text-shadow: 0 0 2px white, 0 0 5px red;
+  text-shadow: 0 0 1px white, 0 0 3px #830000, 0 0 5px red;
   font-size: 12px;
 }
 .shutdown__slots {

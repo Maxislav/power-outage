@@ -45,3 +45,19 @@ export interface IArea{
     slot: string,
     origin: 'city' | 'region'
 }
+
+export interface IOpenMeteo{
+    current: {
+        "time": string,//"2026-01-26T20:30",
+        "interval": number,
+        "temperature_2m": number,
+        "wind_speed_10m": number,
+        "wind_direction_10m": number,
+        "rain": number,
+        "showers": number,
+        "snowfall": number,
+        "cloud_cover": number,
+        "precipitation": number
+        "is_day": 0 | 1
+    }
+}

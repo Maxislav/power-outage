@@ -1908,7 +1908,7 @@ function Service() {
     };
   };
 }
-const html = '<div class="shutdown">\r\n  <div class="shutdown__area-container">\r\n    \r\n    <div class="shutdown__current-time" #currentTime></div>\r\n\r\n    <div class="shutdown__area-selector" #areaSelector> </div>\r\n  </div>\r\n \r\n  <div class="shutdown__title">График на Сегодня</div>\r\n  <div class="shutdown__day">\r\n    <div class="shutdown__area-schedule" #today></div>\r\n  </div>\r\n  <div class="shutdown__title">График на Завтра</div>\r\n  <div class="shutdown__day">\r\n    <div class="shutdown__area-schedule" #tomorrow></div>\r\n  </div>\r\n  <div class="shutdown__title">Сегодня</div>\r\n  <div class="shutdown__slots" #slots></div>\r\n  <div class="shutdown__empty-space"></div>\r\n\r\n  <div class="shutdown__refresh">\r\n    <div class="shutdown__update-time">\r\n      Время получения данных <span #updatedOn></span>\r\n    </div>\r\n    <div class="button" #refresh>Обновить</button>\r\n  </div>\r\n</div>\r\n';
+const html$1 = '<div class="shutdown">\r\n  <div class="shutdown__area-container">\r\n      <div class="shutdown__weather" #weather></div>\r\n\r\n    \r\n    <div class="shutdown__current-time" #currentTime></div>\r\n\r\n    <div class="shutdown__area-selector" #areaSelector> </div>\r\n  </div>\r\n \r\n  <div class="shutdown__title">График на Сегодня</div>\r\n  <div class="shutdown__day">\r\n    <div class="shutdown__area-schedule" #today></div>\r\n  </div>\r\n  <div class="shutdown__title">График на Завтра</div>\r\n  <div class="shutdown__day">\r\n    <div class="shutdown__area-schedule" #tomorrow></div>\r\n  </div>\r\n  <div class="shutdown__title">Сегодня</div>\r\n  <div class="shutdown__slots" #slots></div>\r\n  <div class="shutdown__empty-space"></div>\r\n\r\n  <div class="shutdown__refresh">\r\n    <div class="shutdown__update-time">\r\n      Время получения данных <span #updatedOn></span>\r\n    </div>\r\n    <div class="button" #refresh>Обновить</button>\r\n  </div>\r\n</div>\r\n';
 var ExceptionCode;
 (function(ExceptionCode2) {
   ExceptionCode2["Unimplemented"] = "UNIMPLEMENTED";
@@ -2740,14 +2740,14 @@ function isObjectEmpty(obj) {
   obj.constructor === Object;
 }
 const template$1 = '<div class="slot" #slot>\r\n  <div class="slot__title" #name>назва</div>\r\n  <div class="slot__time-container">\r\n    <div class="slot__time" #time>время</div>\r\n    <div class="slot__until" #until></div>\r\n  </div>\r\n</div>\r\n';
-var __defProp$3 = Object.defineProperty;
-var __getOwnPropDesc$3 = Object.getOwnPropertyDescriptor;
-var __decorateClass$3 = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$3(target, key) : target;
+var __defProp$4 = Object.defineProperty;
+var __getOwnPropDesc$4 = Object.getOwnPropertyDescriptor;
+var __decorateClass$4 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$4(target, key) : target;
   for (var i = decorators.length - 1, decorator; i >= 0; i--)
     if (decorator = decorators[i])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$3(target, key, result);
+  if (kind && result) __defProp$4(target, key, result);
   return result;
 };
 let SlotController = class {
@@ -2805,22 +2805,22 @@ let SlotController = class {
   destroy() {
   }
 };
-__decorateClass$3([
+__decorateClass$4([
   Viewchild("name")
 ], SlotController.prototype, "nameEl", 2);
-__decorateClass$3([
+__decorateClass$4([
   Viewchild("time")
 ], SlotController.prototype, "timeEl", 2);
-__decorateClass$3([
+__decorateClass$4([
   Viewchild("until")
 ], SlotController.prototype, "untilEl", 2);
-__decorateClass$3([
+__decorateClass$4([
   Viewchild("slot")
 ], SlotController.prototype, "slotEl", 2);
-__decorateClass$3([
+__decorateClass$4([
   AutoSubscription()
 ], SlotController.prototype, "calcSub", 1);
-SlotController = __decorateClass$3([
+SlotController = __decorateClass$4([
   Component$1({
     template: template$1
   })
@@ -2915,10 +2915,10 @@ var ConsentStatus;
   ConsentStatus2["Denied"] = "DENIED";
 })(ConsentStatus || (ConsentStatus = {}));
 const FirebaseAnalytics = registerPlugin("FirebaseAnalytics", {
-  web: () => __vitePreload(() => import("./web-hSmmZ7tz.js"), true ? [] : void 0, import.meta.url).then((m) => new m.FirebaseAnalyticsWeb())
+  web: () => __vitePreload(() => import("./web-Dgm8aCei.js"), true ? [] : void 0, import.meta.url).then((m) => new m.FirebaseAnalyticsWeb())
 });
 const Preferences = registerPlugin("Preferences", {
-  web: () => __vitePreload(() => import("./web-BxIwK6bZ.js"), true ? [] : void 0, import.meta.url).then((m) => new m.PreferencesWeb())
+  web: () => __vitePreload(() => import("./web-DRdOmn2c.js"), true ? [] : void 0, import.meta.url).then((m) => new m.PreferencesWeb())
 });
 const getDefaultsFromPostinstall = () => void 0;
 var define_process_env_default = {};
@@ -5732,15 +5732,15 @@ function registerAnalytics() {
   }
 }
 registerAnalytics();
-var __defProp$2 = Object.defineProperty;
-var __getOwnPropDesc$2 = Object.getOwnPropertyDescriptor;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp$2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __decorateClass$2 = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$2(target, key) : target;
+var __defProp$3 = Object.defineProperty;
+var __getOwnPropDesc$3 = Object.getOwnPropertyDescriptor;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp$3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __decorateClass$3 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$3(target, key) : target;
   for (var i = decorators.length - 1, decorator; i >= 0; i--)
     if (decorator = decorators[i])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$2(target, key, result);
+  if (kind && result) __defProp$3(target, key, result);
   return result;
 };
 var __publicField = (obj, key, value) => __defNormalProp(obj, key + "", value);
@@ -5817,21 +5817,21 @@ let State = class {
   }
 };
 __publicField(State, "instance");
-__decorateClass$2([
+__decorateClass$3([
   AutoSubscription()
 ], State.prototype, "areaIdSub", 1);
-State = __decorateClass$2([
+State = __decorateClass$3([
   Service()
 ], State);
 const template = '\r\n<div class="area-selector" #areaSelector>\r\n    <div class="area-selector__current-name" #name>\r\n\r\n    </div>\r\n    <div class="area-selector__list" #list>\r\n        \r\n\r\n    </div>\r\n</div>';
-var __defProp$1 = Object.defineProperty;
-var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
-var __decorateClass$1 = (decorators, target, key, kind) => {
-  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$1(target, key) : target;
+var __defProp$2 = Object.defineProperty;
+var __getOwnPropDesc$2 = Object.getOwnPropertyDescriptor;
+var __decorateClass$2 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$2(target, key) : target;
   for (var i = decorators.length - 1, decorator; i >= 0; i--)
     if (decorator = decorators[i])
       result = (kind ? decorator(target, key, result) : decorator(result)) || result;
-  if (kind && result) __defProp$1(target, key, result);
+  if (kind && result) __defProp$2(target, key, result);
   return result;
 };
 let SelectAreaCtrl = class {
@@ -5908,35 +5908,77 @@ let SelectAreaCtrl = class {
   destroy() {
   }
 };
-__decorateClass$1([
+__decorateClass$2([
   Viewchild("list")
 ], SelectAreaCtrl.prototype, "listEl", 2);
-__decorateClass$1([
+__decorateClass$2([
   Viewchild("name")
 ], SelectAreaCtrl.prototype, "nameEl", 2);
-__decorateClass$1([
+__decorateClass$2([
   Viewchild("areaSelector")
 ], SelectAreaCtrl.prototype, "areaSelectorEl", 2);
-__decorateClass$1([
+__decorateClass$2([
   AutoSubscription()
 ], SelectAreaCtrl.prototype, "activeClassSub", 1);
-__decorateClass$1([
+__decorateClass$2([
   AutoSubscription()
 ], SelectAreaCtrl.prototype, "nameElSub", 1);
-__decorateClass$1([
+__decorateClass$2([
   AutoSubscription()
 ], SelectAreaCtrl.prototype, "docSub", 1);
-__decorateClass$1([
+__decorateClass$2([
   AutoSubscription()
 ], SelectAreaCtrl.prototype, "selectSub", 1);
-__decorateClass$1([
+__decorateClass$2([
   AutoSubscription()
 ], SelectAreaCtrl.prototype, "cirrentAreaSub", 1);
-SelectAreaCtrl = __decorateClass$1([
+SelectAreaCtrl = __decorateClass$2([
   Component$1({
     template
   })
 ], SelectAreaCtrl);
+const html = '<div class="weather">\r\n    <img src="./cloud.svg" alt="Дышащее облако" width="50">\r\n<!--    <div class="mini-cloud"></div>-->\r\n    <div class="weather__temperature">\r\n        <div>t &nbsp;</div>\r\n        <div #temperature></div>\r\n        <div>&deg;C</div>\r\n    </div>\r\n\r\n\r\n</div>';
+var __defProp$1 = Object.defineProperty;
+var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
+var __decorateClass$1 = (decorators, target, key, kind) => {
+  var result = kind > 1 ? void 0 : kind ? __getOwnPropDesc$1(target, key) : target;
+  for (var i = decorators.length - 1, decorator; i >= 0; i--)
+    if (decorator = decorators[i])
+      result = (kind ? decorator(target, key, result) : decorator(result)) || result;
+  if (kind && result) __defProp$1(target, key, result);
+  return result;
+};
+let WeatherComponent = class {
+  sectionElement;
+  temperatureEl;
+  async init() {
+    this.getData();
+  }
+  async getData() {
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=52.45&longitude=30.52&current=temperature_2m,wind_speed_10m,wind_direction_10m,rain,showers,snowfall,wind_speed_10m,wind_direction_10m,cloud_cover,precipitation";
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const json = await response.json();
+      console.log(json);
+      this.temperatureEl.innerText = String(json.current.temperature_2m);
+    } catch (error) {
+      console.error("Fetch error:", error.message);
+    }
+  }
+  destroy() {
+  }
+};
+__decorateClass$1([
+  Viewchild("temperature")
+], WeatherComponent.prototype, "temperatureEl", 2);
+WeatherComponent = __decorateClass$1([
+  Component$1({
+    template: html
+  })
+], WeatherComponent);
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __decorateClass = (decorators, target, key, kind) => {
@@ -5957,6 +5999,7 @@ let RootComponent = class {
   slotsEl;
   currentTimeEl;
   areaSelectorEl;
+  weatherEl;
   SEC_IN_DAY = 86400;
   dayEls = [];
   state = State.getInstance();
@@ -5968,6 +6011,9 @@ let RootComponent = class {
     this.dayEls = [
       ...this.sectionElement.querySelectorAll(".shutdown__day")
     ];
+    const weatherComponentCtrl = new WeatherComponent();
+    await weatherComponentCtrl.init();
+    this.weatherEl.appendChild(weatherComponentCtrl.sectionElement);
   }
   refreshSub() {
     return fromEvent(this.refreshEl, "click").pipe(
@@ -6000,7 +6046,7 @@ let RootComponent = class {
     );
   }
   calcAngle() {
-    return timer(0, 1e4).pipe(
+    return timer(1e3).pipe(
       tap(() => {
         const sunAngle = getSunPosition(
           /* @__PURE__ */ new Date(),
@@ -6163,6 +6209,9 @@ __decorateClass([
   Viewchild("areaSelector")
 ], RootComponent.prototype, "areaSelectorEl", 2);
 __decorateClass([
+  Viewchild("weather")
+], RootComponent.prototype, "weatherEl", 2);
+__decorateClass([
   AutoSubscription()
 ], RootComponent.prototype, "refreshSub", 1);
 __decorateClass([
@@ -6176,11 +6225,11 @@ __decorateClass([
 ], RootComponent.prototype, "myFetchSub", 1);
 RootComponent = __decorateClass([
   Component$1({
-    template: html
+    template: html$1
   })
 ], RootComponent);
 const App = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-DEX4oBYG.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
+  web: () => __vitePreload(() => import("./web-DWHyExYH.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
 });
 class MyCapacitorAppController {
   init() {
@@ -6214,4 +6263,4 @@ export {
   logEvent as l,
   setUserId as s
 };
-//# sourceMappingURL=index-DNoM2Oyr.js.map
+//# sourceMappingURL=index-BfrgpAjM.js.map

@@ -1,0 +1,57 @@
+.weather{
+  &__temperature{
+   display: flex;
+  }
+  &__sun-clouds{
+    position: relative;
+    width: 30px;
+    height: 30px;
+  }
+  &__clouds{
+    transform-origin: 80% 80%;
+  }
+  //&__sun{
+  //  z-index: 1;
+  //}
+  &__clouds,
+  &__sun{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30px;
+    height: 30px;
+  }
+
+  .mini-cloud {
+    position: relative;
+    width: 50px;
+    height: 20px; /* Основная часть стала ниже */
+    background: radial-gradient(circle at 50% 10%, #fff, #f2f2f2);
+    border-radius: 20px;
+    /* Центрируем в квадрате 50x50 */
+    margin-top: 20px;
+  }
+
+  .mini-cloud::before, .mini-cloud::after {
+    content: '';
+    position: absolute;
+    background: radial-gradient(circle at 50% 10%, #fff, #f2f2f2);
+    border-radius: 50%;
+  }
+
+  /* Левый кружок */
+  .mini-cloud::before {
+    width: 25px;
+    height: 25px;
+    top: -15px;
+    left: 5px;
+  }
+
+  /* Правый кружок */
+  .mini-cloud::after {
+    width: 20px;
+    height: 20px;
+    top: -10px;
+    right: 5px;
+  }
+}
