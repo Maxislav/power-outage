@@ -38,7 +38,7 @@ export class WeatherComponent {
             }
 
             const json: IOpenMeteo = await response.json();
-            //console.log(json);
+            console.log(json);
             this.temperatureEl.innerText = String(json.current.temperature_2m);
             this.cloudsEl.style.transform= `scale(${json.current.cloud_cover/100})`;
         } catch (error: any) {
