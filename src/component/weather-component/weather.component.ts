@@ -8,10 +8,13 @@ import {IOpenMeteo} from "@app/model.ts";
 })
 export class WeatherComponent {
     public sectionElement: HTMLElement;
+    appEl: HTMLElement;
     @Viewchild('temperature') temperatureEl: HTMLElement;
     @Viewchild('clouds') cloudsEl: HTMLElement;
 
     async init() {
+        this.appEl = document.querySelector('#app')
+
         this.getData()
     }
 
@@ -41,6 +44,7 @@ export class WeatherComponent {
             console.log(json);
             this.temperatureEl.innerText = String(json.current.temperature_2m);
             this.cloudsEl.style.transform= `scale(${json.current.cloud_cover/100})`;
+            this.appEl.style.setProperty('--cloud-scale', `${json.current.cloud_cover/100}`);
         } catch (error: any) {
             console.error("Fetch error:", error.message);
         }

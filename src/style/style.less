@@ -4,9 +4,11 @@
   color: wheat;
   text-shadow: 0 0 1px white, 0 0 3px #830000, 0 0 5px red;
 }
+
 .gradient-main() {
   background: linear-gradient(120deg, #ffb3d4 -70%, #94bbe9 100%);
 }
+
 .button-style() {
   border: 1px solid #ffaf54;
   background-color: #745d83;
@@ -54,6 +56,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -63,10 +66,20 @@ a:hover {
   initial-value: #000; /* любой начальный цвет */
   inherits: false;
 }
+
 @property --sky-color-bottom {
   syntax: "<color>";
   initial-value: #000;
   inherits: false;
+}
+
+@keyframes slideClouds {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 100vw 0;
+  }
 }
 
 html,
@@ -76,6 +89,7 @@ body,
   padding: 0;
   height: 100vh;
 }
+
 #app {
   position: relative;
   background: #8b26ff;
@@ -86,18 +100,16 @@ body,
   // );
   // background: radial-gradient(circle at 0 50%, #ffffff 0%, #4686fc 10%);
 
-  background: radial-gradient(
-          ellipse 300% 40% at 50% 50%,
-    #ffffff 0%,
-    #fffcfc 4%,
-    #fff6d6 6%,
-    #f7d3b0 10%,
-    #24d3ff 19%,
-    #2469ff 30%,
-    #1b0c49 50%,
-    #0d0525 70%,
-    #04000f 100%
-  );
+  background: radial-gradient(ellipse 300% 40% at 50% 50%,
+  #ffffff 0%,
+  #fffcfc 4%,
+  #fff6d6 6%,
+  #f7d3b0 10%,
+  #24d3ff 19%,
+  #2469ff 30%,
+  #1b0c49 50%,
+  #0d0525 70%,
+  #04000f 100%);
   background-size: 200% 400%;
 
 
@@ -114,20 +126,57 @@ body,
   /* Дополнительная настройка, чтобы солнце казалось объемнее */
   background-blend-mode: screen;
   //transition: --sky-color-top 4s ease, --sky-color-bottom 1s ease;
-  transition: background-position 0.3s ease;
+  transition: background-position 5s ease;
   overflow-y: auto;
+  z-index: 1;
+
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 80px;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-image: url('./cloud.svg');
+    background-repeat: repeat-x;
+    z-index: -1;
+    pointer-events: none;
+    transform: scaleY(calc(0.4 * var(--cloud-scale-factor, 1)));
+    transform-origin: bottom; /* Сплющивание пойдет от верхней границы вниз */
+    animation: slideClouds 100s linear infinite;
+  }
+  &::after{
+    content: "";
+    position: absolute;
+    bottom: 92px;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-image: url('./cloud.svg');
+    background-repeat: repeat-x;
+    z-index: -1;
+    pointer-events: none;
+    transform: scaleY(calc(0.25 * var(--cloud-scale-factor, 1)));
+    transform-origin: bottom; /* Сплющивание пойдет от верхней границы вниз */
+    animation: slideClouds 30s linear infinite;
+    opacity: 0.8;
+  }
 }
+
 /* #map { position: absolute; top: 0; bottom: 0; width: 100%; } */
 * {
   box-sizing: border-box;
 }
+
 .shutdown {
   padding: 0 10px;
-  &__weather{
+
+  &__weather {
     position: absolute;
     left: 0;
     top: 10px;
   }
+
   &__day {
     //height: 104px;
     // transition: height 4s ease;
@@ -136,6 +185,7 @@ body,
     border: 1px solid #ffaf54;
     border-radius: 10px;
     overflow: hidden;
+
     &.loading {
       background: linear-gradient(90deg, #c78c7b, #23a6d5, #c78c7b);
       background-size: 200% 400%;
@@ -148,6 +198,7 @@ body,
       border-radius: 10px;
     }
   }
+
   &__area-schedule {
     display: flex;
     flex-direction: row;
@@ -172,10 +223,12 @@ body,
       padding: 10px;
     }
   }
+
   &__area-schedule-no-data {
     .gold-text-style();
     padding: 0 10px;
   }
+
   &__area-container {
     .gold-text-style();
     display: flex;
@@ -185,28 +238,33 @@ body,
     column-gap: 20px;
     position: relative;
   }
+
   &__area-name {
     text-align: center;
     font-weight: bold;
     font-size: 25px;
     line-height: 25px;
   }
+
   &__current-time {
     font-family: "digital", sans-serif;
     //width: 100px;
     text-align: left;
     font-size: 28px;
     line-height: 30px;
+
     .time-line {
       display: flex;
       align-items: end;
     }
+
     .char {
       &:nth-child(2 of .char) {
         font-size: 18px;
         line-height: 22px;
       }
     }
+
     .digit {
       width: 14px;
       text-align: end;
@@ -219,6 +277,7 @@ body,
       }
     }
   }
+
   &__title {
     .gold-text-style();
     margin-top: 10px;
@@ -253,19 +312,24 @@ body,
     &--work {
       background-color: @light-color;
     }
+
     &--hide {
       background-color: @out-lihgt;
     }
+
     &--first {
       background: linear-gradient(to right, @out-lihgt 50%, @light-color 50%);
     }
+
     &--second {
       background: linear-gradient(to left, @out-lihgt 50%, @light-color 50%);
     }
   }
+
   &__empty-space {
     height: 100px;
   }
+
   &__refresh {
     width: 100%;
     margin-top: 20px;
@@ -285,6 +349,7 @@ body,
       user-select: none;
       border: 1px solid #ffaf54;
       .gold-text-style();
+
       &:active {
         // background-color: red;
         box-shadow: inset 2px 2px 10px rgba(0, 0, 0, 0.8);
@@ -292,23 +357,27 @@ body,
       }
     }
   }
+
   &__update-time {
     font-weight: bold;
     .gold-text-style();
     font-size: 12px;
   }
+
   &__slots {
     display: flex;
     flex-direction: column;
     row-gap: 10px;
     //margin-top: 10px;
   }
+
   &__area-selector {
     position: absolute;
     right: 0;
     top: 18px;
   }
 }
+
 .slot {
   border: 1px solid rgb(95, 85, 241);
   border-radius: 10px;
@@ -319,6 +388,7 @@ body,
   background: #eeaeca;
   //background: linear-gradient(270deg, #94bbe9 0%, #94bbe9 100%);
   background: linear-gradient(120deg, #ffb3d4 -70%, #94bbe9 100%);
+
   &.active {
     border: 1px solid rgb(235, 84, 255);
     background: linear-gradient(120deg, #feffb3 20%, #94bbe9 100%);
@@ -330,6 +400,7 @@ body,
     justify-content: space-between;
   }
 }
+
 .area-selector {
   position: relative;
   width: 120px;
@@ -337,6 +408,7 @@ body,
   border: 1px solid #ffaf54;
   border-radius: 10px;
   .button-style();
+
   &__list {
     position: absolute;
     top: 120%;
@@ -344,14 +416,17 @@ body,
     width: 100%;
     display: none;
   }
+
   &.active {
     .area-selector__list {
       display: block;
     }
   }
+
   &__current-name {
     // .gradient-main();
   }
+
   &__item {
     padding: 5px 10px;
     border: 1px solid #ffaf54;
