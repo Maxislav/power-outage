@@ -1908,7 +1908,7 @@ function Service() {
     };
   };
 }
-const html$1 = '<div class="shutdown">\r\n  <div class="shutdown__area-container">\r\n      <div class="shutdown__weather" #weather></div>\r\n\r\n    \r\n    <div class="shutdown__current-time" #currentTime></div>\r\n\r\n    <div class="shutdown__area-selector" #areaSelector> </div>\r\n  </div>\r\n \r\n  <div class="shutdown__title">График на Сегодня</div>\r\n  <div class="shutdown__day">\r\n    <div class="shutdown__area-schedule" #today></div>\r\n  </div>\r\n  <div class="shutdown__title">График на Завтра</div>\r\n  <div class="shutdown__day">\r\n    <div class="shutdown__area-schedule" #tomorrow></div>\r\n  </div>\r\n  <div class="shutdown__title">Сегодня</div>\r\n  <div class="shutdown__slots" #slots></div>\r\n  <div class="shutdown__empty-space"></div>\r\n\r\n  <div class="shutdown__refresh">\r\n    <div class="shutdown__update-time">\r\n      Время получения данных <span #updatedOn></span>\r\n    </div>\r\n    <div class="button" #refresh>Обновить</button>\r\n  </div>\r\n</div>\r\n';
+const html$1 = '<div class="shutdown">\n    <div class="shutdown__area-container">\n        <div class="shutdown__weather" #weather></div>\n\n\n        <div class="shutdown__current-time" #currentTime></div>\n\n        <div class="shutdown__area-selector" #areaSelector></div>\n    </div>\n\n    <div class="shutdown__title">График на Сегодня</div>\n    <div class="shutdown__day">\n        <div class="shutdown__area-schedule" #today></div>\n    </div>\n    <div class="shutdown__title">График на Завтра</div>\n    <div class="shutdown__day">\n        <div class="shutdown__area-schedule" #tomorrow></div>\n    </div>\n    <div class="shutdown__title">Сегодня</div>\n    <div class="shutdown__slots" #slots></div>\n    <div class="shutdown__empty-space"></div>\n\n    <div class="shutdown__refresh">\n        <div class="shutdown__update-time">\n            Время получения данных <span #updatedOn></span>\n        </div>\n        <div class="button" #refresh>Обновить</button>\n        </div>\n    </div>\n</div>';
 var ExceptionCode;
 (function(ExceptionCode2) {
   ExceptionCode2["Unimplemented"] = "UNIMPLEMENTED";
@@ -2739,7 +2739,7 @@ function isObjectEmpty(obj) {
   Object.keys(obj).length === 0 && // Проверка на отсутствие ключей
   obj.constructor === Object;
 }
-const template$1 = '<div class="slot" #slot>\r\n  <div class="slot__title" #name>назва</div>\r\n  <div class="slot__time-container">\r\n    <div class="slot__time" #time>время</div>\r\n    <div class="slot__until" #until></div>\r\n  </div>\r\n</div>\r\n';
+const template$1 = '<div class="slot" #slot>\n  <div class="slot__title" #name>назва</div>\n  <div class="slot__time-container">\n    <div class="slot__time" #time>время</div>\n    <div class="slot__until" #until></div>\n  </div>\n</div>\n';
 var __defProp$4 = Object.defineProperty;
 var __getOwnPropDesc$4 = Object.getOwnPropertyDescriptor;
 var __decorateClass$4 = (decorators, target, key, kind) => {
@@ -2915,10 +2915,10 @@ var ConsentStatus;
   ConsentStatus2["Denied"] = "DENIED";
 })(ConsentStatus || (ConsentStatus = {}));
 const FirebaseAnalytics = registerPlugin("FirebaseAnalytics", {
-  web: () => __vitePreload(() => import("./web-Dgm8aCei.js"), true ? [] : void 0, import.meta.url).then((m) => new m.FirebaseAnalyticsWeb())
+  web: () => __vitePreload(() => import("./web-CUPB3XpJ.js"), true ? [] : void 0, import.meta.url).then((m) => new m.FirebaseAnalyticsWeb())
 });
 const Preferences = registerPlugin("Preferences", {
-  web: () => __vitePreload(() => import("./web-DRdOmn2c.js"), true ? [] : void 0, import.meta.url).then((m) => new m.PreferencesWeb())
+  web: () => __vitePreload(() => import("./web-BYpbJI1q.js"), true ? [] : void 0, import.meta.url).then((m) => new m.PreferencesWeb())
 });
 const getDefaultsFromPostinstall = () => void 0;
 var define_process_env_default = {};
@@ -3991,7 +3991,7 @@ function isVersionServiceProvider(provider) {
   return component?.type === "VERSION";
 }
 const name$q = "@firebase/app";
-const version$1$1 = "0.14.7";
+const version$1$1 = "0.14.6";
 const logger$1 = new Logger("@firebase/app");
 const name$p = "@firebase/app-compat";
 const name$o = "@firebase/analytics-compat";
@@ -4547,7 +4547,7 @@ function registerCoreComponents(variant) {
 }
 registerCoreComponents("");
 var name$2 = "firebase";
-var version$2 = "12.8.0";
+var version$2 = "12.7.0";
 registerVersion(name$2, version$2, "app");
 const name$1 = "@firebase/installations";
 const version$1 = "0.6.19";
@@ -5823,7 +5823,7 @@ __decorateClass$3([
 State = __decorateClass$3([
   Service()
 ], State);
-const template = '\r\n<div class="area-selector" #areaSelector>\r\n    <div class="area-selector__current-name" #name>\r\n\r\n    </div>\r\n    <div class="area-selector__list" #list>\r\n        \r\n\r\n    </div>\r\n</div>';
+const template = '\n<div class="area-selector" #areaSelector>\n    <div class="area-selector__current-name" #name>\n\n    </div>\n    <div class="area-selector__list" #list>\n        \n\n    </div>\n</div>';
 var __defProp$2 = Object.defineProperty;
 var __getOwnPropDesc$2 = Object.getOwnPropertyDescriptor;
 var __decorateClass$2 = (decorators, target, key, kind) => {
@@ -5937,7 +5937,7 @@ SelectAreaCtrl = __decorateClass$2([
     template
   })
 ], SelectAreaCtrl);
-const html = '<div class="weather">\r\n    <img src="./cloud.svg" alt="Дышащее облако" width="50">\r\n<!--    <div class="mini-cloud"></div>-->\r\n    <div class="weather__temperature">\r\n        <div>t &nbsp;</div>\r\n        <div #temperature></div>\r\n        <div>&deg;C</div>\r\n    </div>\r\n\r\n\r\n</div>';
+const html = '<div class="weather">\n    <div class="weather__sun-clouds">\n\n        <img class="weather__sun" src="./sun.svg" alt="Дышащее облако" width="30">\n        <img class="weather__clouds" src="./cloud.svg" alt="Дышащее облако" width="30" #clouds>\n    </div>\n\n    <!--    <div class="mini-cloud"></div>-->\n    <div class="weather__temperature">\n        <div #temperature></div>\n        <div>&deg;C</div>\n    </div>\n</div>';
 var __defProp$1 = Object.defineProperty;
 var __getOwnPropDesc$1 = Object.getOwnPropertyDescriptor;
 var __decorateClass$1 = (decorators, target, key, kind) => {
@@ -5950,12 +5950,15 @@ var __decorateClass$1 = (decorators, target, key, kind) => {
 };
 let WeatherComponent = class {
   sectionElement;
+  appEl;
   temperatureEl;
+  cloudsEl;
   async init() {
+    this.appEl = document.querySelector("#app");
     this.getData();
   }
   async getData() {
-    const url = "https://api.open-meteo.com/v1/forecast?latitude=52.45&longitude=30.52&current=temperature_2m,wind_speed_10m,wind_direction_10m,rain,showers,snowfall,wind_speed_10m,wind_direction_10m,cloud_cover,precipitation";
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=52.45&longitude=30.52&current=temperature_2m,wind_speed_10m,wind_direction_10m,rain,showers,snowfall,wind_speed_10m,wind_direction_10m,cloud_cover,is_day,precipitation";
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -5964,6 +5967,8 @@ let WeatherComponent = class {
       const json = await response.json();
       console.log(json);
       this.temperatureEl.innerText = String(json.current.temperature_2m);
+      this.cloudsEl.style.transform = `scale(${json.current.cloud_cover / 100})`;
+      this.appEl.style.setProperty("--cloud-scale", `${json.current.cloud_cover / 100}`);
     } catch (error) {
       console.error("Fetch error:", error.message);
     }
@@ -5974,6 +5979,9 @@ let WeatherComponent = class {
 __decorateClass$1([
   Viewchild("temperature")
 ], WeatherComponent.prototype, "temperatureEl", 2);
+__decorateClass$1([
+  Viewchild("clouds")
+], WeatherComponent.prototype, "cloudsEl", 2);
 WeatherComponent = __decorateClass$1([
   Component$1({
     template: html
@@ -6002,6 +6010,7 @@ let RootComponent = class {
   weatherEl;
   SEC_IN_DAY = 86400;
   dayEls = [];
+  weatherComponentCtrl;
   state = State.getInstance();
   slotList = [];
   async init(selector) {
@@ -6011,9 +6020,9 @@ let RootComponent = class {
     this.dayEls = [
       ...this.sectionElement.querySelectorAll(".shutdown__day")
     ];
-    const weatherComponentCtrl = new WeatherComponent();
-    await weatherComponentCtrl.init();
-    this.weatherEl.appendChild(weatherComponentCtrl.sectionElement);
+    this.weatherComponentCtrl = new WeatherComponent();
+    await this.weatherComponentCtrl.init();
+    this.weatherEl.appendChild(this.weatherComponentCtrl.sectionElement);
   }
   refreshSub() {
     return fromEvent(this.refreshEl, "click").pipe(
@@ -6021,6 +6030,7 @@ let RootComponent = class {
         this.clearBeforeUpdate();
       }),
       switchMap(() => {
+        this.weatherComponentCtrl.getData();
         return this.myFetchSub().pipe(take(1));
       })
     );
@@ -6046,7 +6056,7 @@ let RootComponent = class {
     );
   }
   calcAngle() {
-    return timer(1e3).pipe(
+    return timer(1e3, 1e4).pipe(
       tap(() => {
         const sunAngle = getSunPosition(
           /* @__PURE__ */ new Date(),
@@ -6090,7 +6100,7 @@ let RootComponent = class {
         this.dayEls.forEach((el) => {
           el.classList.remove("loading");
         });
-        if (isObjectEmpty(d)) {
+        if (isObjectEmpty(d) || isObjectEmpty(d[slot]) || d[slot].today?.slots?.length === 0) {
           this.todayEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`;
           this.tomorrowEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`;
           return;
@@ -6229,7 +6239,7 @@ RootComponent = __decorateClass([
   })
 ], RootComponent);
 const App = registerPlugin("App", {
-  web: () => __vitePreload(() => import("./web-DWHyExYH.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
+  web: () => __vitePreload(() => import("./web-DRbyS1l9.js"), true ? [] : void 0, import.meta.url).then((m) => new m.AppWeb())
 });
 class MyCapacitorAppController {
   init() {
@@ -6263,4 +6273,4 @@ export {
   logEvent as l,
   setUserId as s
 };
-//# sourceMappingURL=index-BfrgpAjM.js.map
+//# sourceMappingURL=index-Bdqk_rgt.js.map

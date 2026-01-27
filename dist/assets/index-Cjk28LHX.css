@@ -5,6 +5,22 @@
 .weather__temperature {
   display: flex;
 }
+.weather__sun-clouds {
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+.weather__clouds {
+  transform-origin: 80% 80%;
+}
+.weather__clouds,
+.weather__sun {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+}
 .weather .mini-cloud {
   position: relative;
   width: 50px;
@@ -82,6 +98,14 @@ a:hover {
   initial-value: #000;
   inherits: false;
 }
+@keyframes slideClouds {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 100vw 0;
+  }
+}
 html,
 body,
 #app {
@@ -96,8 +120,42 @@ body,
   background-size: 200% 400%;
   /* Дополнительная настройка, чтобы солнце казалось объемнее */
   background-blend-mode: screen;
-  transition: background-position 0.3s ease;
+  transition: background-position 5s ease;
   overflow-y: auto;
+  z-index: 1;
+}
+#app::before {
+  content: "";
+  position: absolute;
+  bottom: 80px;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-image: url('../cloud.svg');
+  background-repeat: repeat-x;
+  z-index: -1;
+  pointer-events: none;
+  transform: scaleY(calc(0.4 * var(--cloud-scale-factor, 1)));
+  transform-origin: bottom;
+  /* Сплющивание пойдет от верхней границы вниз */
+  animation: slideClouds 100s linear infinite;
+}
+#app::after {
+  content: "";
+  position: absolute;
+  bottom: 92px;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-image: url('../cloud.svg');
+  background-repeat: repeat-x;
+  z-index: -1;
+  pointer-events: none;
+  transform: scaleY(calc(0.25 * var(--cloud-scale-factor, 1)));
+  transform-origin: bottom;
+  /* Сплющивание пойдет от верхней границы вниз */
+  animation: slideClouds 30s linear infinite;
+  opacity: 0.8;
 }
 /* #map { position: absolute; top: 0; bottom: 0; width: 100%; } */
 * {
@@ -109,7 +167,7 @@ body,
 .shutdown__weather {
   position: absolute;
   left: 0;
-  top: 18px;
+  top: 10px;
 }
 .shutdown__day {
   display: flex;

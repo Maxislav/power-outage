@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev:front": "vite --open",
-    "dev:server": "concurrently \"npm run tsc-be:w\" \"npm run server:dev",
+    "dev:server": "concurrently \"npm run tsc-be:w\" \"npm run server:dev\"",
     "node:v": "which node && node -v",
     "build": "tsc && vite build",
     "preview": "vite preview",
