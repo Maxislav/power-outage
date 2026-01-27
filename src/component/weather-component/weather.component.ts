@@ -11,6 +11,8 @@ export class WeatherComponent {
     appEl: HTMLElement;
     @Viewchild('temperature') temperatureEl: HTMLElement;
     @Viewchild('clouds') cloudsEl: HTMLElement;
+    @Viewchild('wind') windEl: HTMLElement;
+    @Viewchild('windDirection') windDirectionEl: HTMLElement;
 
     async init() {
         this.appEl = document.querySelector('#app')
@@ -43,6 +45,8 @@ export class WeatherComponent {
             const json: IOpenMeteo = await response.json();
             console.log(json);
             this.temperatureEl.innerText = String(json.current.temperature_2m);
+            this.windEl.innerText = String(json.current.wind_speed_10m);
+            this.windDirectionEl.style.transform = `rotate(${json.current.wind_direction_10m}deg)`;
             this.cloudsEl.style.transform= `scale(${json.current.cloud_cover/100})`;
             this.appEl.style.setProperty('--cloud-scale', `${json.current.cloud_cover/100}`);
         } catch (error: any) {
