@@ -4,6 +4,10 @@
   color: wheat;
   text-shadow: 0 0 1px white, 0 0 3px #830000, 0 0 5px red;
 }
+.silver-text-style() {
+  color: #f8e5c9;
+  text-shadow: 0 0 1px white, 0 0 3px #000000, 0 0 5px #897eba, 0 0 10px #00081b;
+}
 
 .gradient-main() {
   background: linear-gradient(120deg, #ffb3d4 -70%, #94bbe9 100%);
@@ -133,22 +137,7 @@ body,
   &::before {
     content: "";
     position: absolute;
-    bottom: 80px;
-    left: 0;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background-image: url('../cloud.svg');
-    background-repeat: repeat-x;
-    z-index: -1;
-    pointer-events: none;
-    transform: scaleY(calc(0.4 * var(--cloud-scale-factor, 1)));
-    transform-origin: bottom; /* Сплющивание пойдет от верхней границы вниз */
-    animation: slideClouds 100s linear infinite;
-  }
-  &::after{
-    content: "";
-    position: absolute;
-    bottom: 92px;
+    top: 30px;
     left: 0;
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -157,9 +146,25 @@ body,
     z-index: -1;
     pointer-events: none;
     transform: scaleY(calc(0.25 * var(--cloud-scale-factor, 1)));
-    transform-origin: bottom; /* Сплющивание пойдет от верхней границы вниз */
+    transform-origin: top; /* Сплющивание пойдет от верхней границы вниз */
+    animation: slideClouds 100s linear infinite;
+    opacity: 0.7;
+  }
+  &::after{
+    content: "";
+    position: absolute;
+    top: -37px;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-image: url('../cloud.svg');
+    background-repeat: repeat-x;
+    z-index: -1;
+    pointer-events: none;
+    transform: scaleY(calc(0.4 * var(--cloud-scale-factor, 1)));
+    transform-origin: top; /* Сплющивание пойдет от верхней границы вниз */
     animation: slideClouds 30s linear infinite;
-    opacity: 0.8;
+
   }
 }
 
@@ -230,7 +235,7 @@ body,
   }
 
   &__area-container {
-    .gold-text-style();
+    .silver-text-style();
     display: flex;
     align-items: center;
     justify-content: center;

@@ -1,7 +1,7 @@
 import html from "./weather.component.html?raw";
 import {Component, Viewchild} from "@app/decorator.ts";
 import './weather.component.less'
-import {IOpenMeteo} from "@app/model.ts";
+import {IOpenMeteo, IOpenWeather} from "@app/model.ts";
 
 @Component({
     template: html
@@ -21,20 +21,27 @@ export class WeatherComponent {
     }
 
     async getData(): Promise<void> {
-        const url = "https://api.open-meteo.com/v1/forecast?" +
-            "latitude=52.45&longitude=30.52" +
-            "&current=" +
-            "temperature_2m," +
-            "wind_speed_10m," +
-            "wind_direction_10m," +
-            "rain," +
-            "showers," +
-            "snowfall," +
-            "wind_speed_10m," +
-            "wind_direction_10m," +
-            "cloud_cover," +
-            "is_day," +
-            "precipitation";
+        // const url = "https://api.open-meteo.com/v1/forecast?" +
+        //     "latitude=52.45&longitude=30.52" +
+        //     "&current=" +
+        //     "temperature_2m," +
+        //     "wind_speed_10m," +
+        //     "wind_direction_10m," +
+        //     "rain," +
+        //     "showers," +
+        //     "snowfall," +
+        //     "wind_speed_10m," +
+        //     "wind_direction_10m," +
+        //     "cloud_cover," +
+        //     "is_day," +
+        //     "precipitation";
+
+        const  url = 'https://api.openweathermap.org/data/2.5/weather?' +
+            'lat=50.454660' +
+            '&lon=30.523800' +
+            '&exclude=current' +
+            '&appid=19e738728f18421f2074f369bdb54e81' +
+            '&units=metric'
         try {
             const response = await fetch(url);
 
@@ -42,13 +49,14 @@ export class WeatherComponent {
                 throw new Error(`Response status: ${response.status}`);
             }
 
-            const json: IOpenMeteo = await response.json();
+            //const json: IOpenMeteo = await response.json();
+            const json: IOpenWeather = await response.json();
             console.log(json);
-            this.temperatureEl.innerText = String(json.current.temperature_2m);
-            this.windEl.innerText = String(json.current.wind_speed_10m);
-            this.windDirectionEl.style.transform = `rotate(${json.current.wind_direction_10m}deg)`;
-            this.cloudsEl.style.transform= `scale(${json.current.cloud_cover/100})`;
-            this.appEl.style.setProperty('--cloud-scale', `${json.current.cloud_cover/100}`);
+            this.temperatureEl.innerText = json.main.temp>0 ? `+${json.main.temp.toFixed(1)}`: `${json.main.temp.toFixed(1)}`;
+            this.windEl.innerText = `${json.wind.speed.toFixed(1)}`;
+            this.windDirectionEl.style.transform = `rotate(${(json.wind.deg+180)%360}deg)`;
+            this.cloudsEl.style.transform= `scale(${json.clouds.all/100})`;
+            this.appEl.style.setProperty('--cloud-scale', `${json.clouds.all/100}`);
         } catch (error: any) {
             console.error("Fetch error:", error.message);
         }

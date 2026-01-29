@@ -9,8 +9,8 @@
             <feGaussianBlur in="SourceGraphic" stdDeviation="1.3" />
         </filter>
 
-        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="2" stdDeviation="1.4" flood-color="black" flood-opacity="0.7"/>
+        <filter id="shadow" x="-50%" y="-50%" width="250%" height="200%">
+            <feDropShadow dx="0" dy="3" stdDeviation="1.4" flood-color="black" flood-opacity="0.8"/>
         </filter>
     </defs>
 
@@ -21,6 +21,12 @@
             <circle cx="34" cy="28" r="9" />
             <circle cx="41" cy="34" r="6" />
             <rect x="12" y="30" width="28" height="10" rx="5" />
+        </g>
+    </g>
+    <g filter="url(#shadow)">
+        <g filter="url(#fluffy)" fill="url(#cloudGrad)" transform="scale(1.8, 1)" transform-origin="14 25">
+            <circle cx="23" cy="30" r="7" />
+
         </g>
     </g>
 </svg>

@@ -61,3 +61,24 @@ export interface IOpenMeteo{
         "is_day": 0 | 1
     }
 }
+
+export interface IOpenWeather{
+    main: {
+        "temp": number,
+        "feels_like":number,
+        "temp_min": number,
+        "temp_max": number,
+        "pressure": number,
+        "humidity": number, // 98
+        "sea_level": number,
+        "grnd_level": number
+    },
+    wind: {
+        "speed": number,
+        "deg": number,
+        "gust": number
+    },
+    clouds: {
+        all: number
+    }
+}
