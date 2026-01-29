@@ -77,7 +77,13 @@ const serverHttps = https.createServer(options, async (reqq: any, ress: any) => 
     // Проверяем путь запроса
     if (myURL.pathname === "/shutdown" && reqq.method === "GET") {
         try {
-            const data = await getRegion(reqParams);
+            let data = await getRegion(reqParams);
+            console.log("reqParams ->>", reqParams);
+            console.log("data ->>", data);
+            if(reqParams.origin === 'city' && !data[reqParams?.slot]?.today.slots.length){
+                data = await getYasno();
+            }
+            //const data = await getYasno();
             ress.end(data);
         } catch (error) {
             console.error("Ошибка при запросе:", error);
@@ -110,7 +116,13 @@ const serverHttp = http.createServer(async (reqq: any, ress: any) => {
 
     if (myURL.pathname === "/shutdown" && reqq.method === "GET") {
         try {
-            const data = await getRegion(reqParams);
+            let data = await getRegion(reqParams);
+            console.log("reqParams ->>", reqParams);
+            console.log("data ->>", data);
+            if(reqParams.origin === 'city' && !data[reqParams?.slot]?.today.slots.length){
+                data = await getYasno();
+            }
+            //const data = await getYasno();
             ress.end(data);
         } catch (error) {
             console.error("Ошибка при запросе:", error);
@@ -135,7 +147,7 @@ if (options.cert) {
     });
 }
 
-async function getCity() {
+async function getYasno() {
     const deferred = new Deferred();
 
     const options = {

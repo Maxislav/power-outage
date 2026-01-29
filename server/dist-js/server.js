@@ -58,6 +58,7 @@ const headers = {
     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
 };
 const serverHttps = https.createServer(options, (reqq, ress) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const origin = reqq.headers.origin || reqq.headers.referer;
     const baseURL = `https://${reqq.headers.host}`;
     const myURL = new URL(reqq.url, baseURL);
@@ -73,7 +74,13 @@ const serverHttps = https.createServer(options, (reqq, ress) => __awaiter(void 0
     // Проверяем путь запроса
     if (myURL.pathname === "/shutdown" && reqq.method === "GET") {
         try {
-            const data = yield getRegion(reqParams);
+            let data = yield getRegion(reqParams);
+            console.log("reqParams ->>", reqParams);
+            console.log("data ->>", data);
+            if (reqParams.origin === 'city' && !((_a = data[reqParams === null || reqParams === void 0 ? void 0 : reqParams.slot]) === null || _a === void 0 ? void 0 : _a.today.slots.length)) {
+                data = yield getYasno();
+            }
+            //const data = await getYasno();
             ress.end(data);
         }
         catch (error) {
@@ -88,6 +95,7 @@ const serverHttps = https.createServer(options, (reqq, ress) => __awaiter(void 0
     }
 }));
 const serverHttp = http.createServer((reqq, ress) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const origin = reqq.headers.origin;
     const baseURL = `http://${reqq.headers.host}`;
     const myURL = new URL(reqq.url, baseURL);
@@ -103,7 +111,13 @@ const serverHttp = http.createServer((reqq, ress) => __awaiter(void 0, void 0, v
     ress.setHeader("Access-Control-Allow-Headers", "Content-Type");
     if (myURL.pathname === "/shutdown" && reqq.method === "GET") {
         try {
-            const data = yield getRegion(reqParams);
+            let data = yield getRegion(reqParams);
+            console.log("reqParams ->>", reqParams);
+            console.log("data ->>", data);
+            if (reqParams.origin === 'city' && !((_a = data[reqParams === null || reqParams === void 0 ? void 0 : reqParams.slot]) === null || _a === void 0 ? void 0 : _a.today.slots.length)) {
+                data = yield getYasno();
+            }
+            //const data = await getYasno();
             ress.end(data);
         }
         catch (error) {
@@ -127,7 +141,7 @@ if (options.cert) {
         console.log(`Маршрут: https://localhost:${PORT_HTTPS}/shutdown`);
     });
 }
-function getCity() {
+function getYasno() {
     return __awaiter(this, void 0, void 0, function* () {
         const deferred = new Deferred();
         const options = {

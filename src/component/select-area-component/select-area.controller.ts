@@ -84,7 +84,7 @@ export class SelectAreaCtrl {
   }
 
   @AutoSubscription()
-  cirrentAreaSub() {
+  currentAreaSub() {
     return this.state.getArea().pipe(
       map((a) => a.value),
       tap((area) => {

@@ -163,7 +163,7 @@ export class RootComponent {
                 this.dayEls.forEach((el) => {
                     el.classList.remove("loading");
                 });
-                if (isObjectEmpty(d) || isObjectEmpty(d[slot]) || d[slot].today?.slots?.length === 0 ) {
+                if (isObjectEmpty(d) || isObjectEmpty(d[slot]) || !d[slot]?.today?.slots?.length ) {
                     this.todayEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`
                     this.tomorrowEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`
                     return;
