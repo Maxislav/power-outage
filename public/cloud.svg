@@ -25,7 +25,8 @@
     </g>
     <g filter="url(#shadow)">
         <g filter="url(#fluffy)" fill="url(#cloudGrad)" transform="scale(1.8, 1)" transform-origin="14 25">
-            <circle cx="23" cy="30" r="7" />
+            <circle cx="23" cy="31" r="7" />
+            <circle cx="16" cy="33" r="4" />
 
         </g>
     </g>

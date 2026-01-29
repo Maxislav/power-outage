@@ -37,8 +37,9 @@ export class WeatherComponent {
         //     "precipitation";
 
         const  url = 'https://api.openweathermap.org/data/2.5/weather?' +
-            'lat=50.454660' +
-            '&lon=30.523800' +
+            // 'lat=50.358399' +
+            // '&lon=30.473383' +
+            'q=Kyiv'+
             '&exclude=current' +
             '&appid=19e738728f18421f2074f369bdb54e81' +
             '&units=metric'
@@ -52,11 +53,21 @@ export class WeatherComponent {
             //const json: IOpenMeteo = await response.json();
             const json: IOpenWeather = await response.json();
             console.log(json);
+           // json.clouds.all = 50
             this.temperatureEl.innerText = json.main.temp>0 ? `+${json.main.temp.toFixed(1)}`: `${json.main.temp.toFixed(1)}`;
             this.windEl.innerText = `${json.wind.speed.toFixed(1)}`;
             this.windDirectionEl.style.transform = `rotate(${(json.wind.deg+180)%360}deg)`;
             this.cloudsEl.style.transform= `scale(${json.clouds.all/100})`;
             this.appEl.style.setProperty('--cloud-scale', `${json.clouds.all/100}`);
+
+            const viewportWidth = window.innerWidth;
+
+            //console.log(viewportWidth);
+            const cloudAfterTop = 120 - viewportWidth*json.clouds.all*0.4/100;
+            const beforeTop = 120 - viewportWidth*json.clouds.all*0.25/100;
+           // console.log(top);
+            this.appEl.style.setProperty('--cloud-after-top', `${cloudAfterTop}`);
+            this.appEl.style.setProperty('--cloud-before-top', `${beforeTop}`);
         } catch (error: any) {
             console.error("Fetch error:", error.message);
         }
