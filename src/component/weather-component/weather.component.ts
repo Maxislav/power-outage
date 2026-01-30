@@ -1,13 +1,15 @@
 import html from "./weather.component.html?raw";
-import {Component, Viewchild} from "@app/decorator.ts";
+import {AutoSubscription, Component, Viewchild} from "@app/decorator.ts";
 import './weather.component.less'
 import {IOpenMeteo, IOpenWeather} from "@app/model.ts";
+import {fromEvent, map, switchMap, takeUntil, tap, timer} from "rxjs";
 
 @Component({
     template: html
 })
 export class WeatherComponent {
     public sectionElement: HTMLElement;
+    private hostElement: HTMLElement;
     appEl: HTMLElement;
     @Viewchild('temperature') temperatureEl: HTMLElement;
     @Viewchild('clouds') cloudsEl: HTMLElement;
@@ -36,10 +38,10 @@ export class WeatherComponent {
         //     "is_day," +
         //     "precipitation";
 
-        const  url = 'https://api.openweathermap.org/data/2.5/weather?' +
+        const url = 'https://api.openweathermap.org/data/2.5/weather?' +
             // 'lat=50.358399' +
             // '&lon=30.473383' +
-            'q=Kyiv'+
+            'q=Kyiv' +
             '&exclude=current' +
             '&appid=19e738728f18421f2074f369bdb54e81' +
             '&units=metric'
@@ -53,24 +55,41 @@ export class WeatherComponent {
             //const json: IOpenMeteo = await response.json();
             const json: IOpenWeather = await response.json();
             console.log(json);
-           // json.clouds.all = 50
-            this.temperatureEl.innerText = json.main.temp>0 ? `+${json.main.temp.toFixed(1)}`: `${json.main.temp.toFixed(1)}`;
+            // json.clouds.all = 50
+            this.temperatureEl.innerText = json.main.temp > 0 ? `+${json.main.temp.toFixed(1)}` : `${json.main.temp.toFixed(1)}`;
             this.windEl.innerText = `${json.wind.speed.toFixed(1)}`;
-            this.windDirectionEl.style.transform = `rotate(${(json.wind.deg+180)%360}deg)`;
-            this.cloudsEl.style.transform= `scale(${json.clouds.all/100})`;
-            this.appEl.style.setProperty('--cloud-scale', `${json.clouds.all/100}`);
+            this.windDirectionEl.style.transform = `rotate(${(json.wind.deg + 180) % 360}deg)`;
+            this.cloudsEl.style.transform = `scale(${json.clouds.all / 100})`;
+            this.appEl.style.setProperty('--cloud-scale', `${json.clouds.all / 100}`);
 
             const viewportWidth = window.innerWidth;
 
             //console.log(viewportWidth);
-            const cloudAfterTop = 120 - viewportWidth*json.clouds.all*0.4/100;
-            const beforeTop = 120 - viewportWidth*json.clouds.all*0.25/100;
-           // console.log(top);
+            const cloudAfterTop = 120 - viewportWidth * json.clouds.all * 0.4 / 100;
+            const beforeTop = 120 - viewportWidth * json.clouds.all * 0.25 / 100;
+            // console.log(top);
             this.appEl.style.setProperty('--cloud-after-top', `${cloudAfterTop}`);
             this.appEl.style.setProperty('--cloud-before-top', `${beforeTop}`);
         } catch (error: any) {
             console.error("Fetch error:", error.message);
         }
+    }
+
+    @AutoSubscription()
+    hostElementSub() {
+        return fromEvent(this.hostElement, 'touchstart')
+            .pipe(
+                tap((event) => {
+                    this.hostElement.classList.add('weather--active');
+                    this.getData()
+                }),
+                switchMap((event) => {
+                    return timer(1000)
+                }),
+                tap(() => {
+                    this.hostElement.classList.remove('weather--active');
+                }),
+            )
     }
 
     destroy() {

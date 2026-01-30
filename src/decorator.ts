@@ -61,6 +61,7 @@ export function Component(props: { template: string }) {
     }
   >(originalConstructor: T, context?: ClassDecoratorContext) {
     return class extends originalConstructor {
+      hostElement: Element;
       rootElement: HTMLElement;
       sectionElement: HTMLElement;
       __rootElement: HTMLElement;
@@ -83,10 +84,13 @@ export function Component(props: { template: string }) {
         this.__mainSub = new Subscription();
         this.__rootElement = document.querySelector(selector);
         this.rootElement = this.__rootElement;
+         //this.__rootElement;
         this.__section = document.createElement("section");
+
         this.__section.style.display = "contents";
         this.__section.innerHTML = props.template;
         this.sectionElement = this.__section;
+        this.hostElement = this.__section.firstElementChild;
         const refSub = this["AUTO_SUBSCRIBTION"] || [];
         const refs = this["VIEW_CHILD_REFS"] || [];
         // debugger
@@ -129,7 +133,7 @@ export function Service() {
     }
   >(originalConstructor: T, context?: ClassDecoratorContext) {
     return class extends originalConstructor {
-    
+
       __mainSub: Subscription;
       AUTO_SUBSCRIBTION =
         originalConstructor.prototype["AUTO_SUBSCRIBTION"] || [];
@@ -144,11 +148,11 @@ export function Service() {
 
        // const selector = args[0];
         this.__mainSub = new Subscription();
-       
+
         const refSub = this["AUTO_SUBSCRIBTION"] || [];
-       
+
         // debugger
-       
+
         const originalInit = await super.init(...args);
         refSub.forEach((ref: any) => {
           this.__mainSub.add((this as any)[ref.functionName]().subscribe());
