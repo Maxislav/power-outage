@@ -1,6 +1,7 @@
 import {AutoSubscription, Component, Viewchild} from "@app/decorator";
 import html from "./root.component.html?raw";
 import {capGet, myFetch} from "@app/request";
+import './clouds.less';
 import {
     distinctUntilChanged,
     from,

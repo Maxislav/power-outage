@@ -77,14 +77,6 @@ a:hover {
   inherits: false;
 }
 
-@keyframes slideClouds {
-  from {
-    background-position: 0 0;
-  }
-  to {
-    background-position: 100vw 0;
-  }
-}
 
 html,
 body,
@@ -134,38 +126,7 @@ body,
   overflow-y: auto;
   z-index: 1;
 
-  &::before {
-    content: "";
-    position: absolute;
-    top: calc(var(--cloud-before-top, 0) * 1px);
-    left: 0;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background-image: url('../cloud.svg');
-    background-repeat: repeat-x;
-    z-index: -1;
-    pointer-events: none;
-    transform: scaleY(calc(0.25 * var(--cloud-scale, 1)));
-    transform-origin: top; /* Сплющивание пойдет от верхней границы вниз */
-    animation: slideClouds 100s linear infinite;
-    opacity: 0.7;
-  }
-  &::after{
-    content: "";
-    position: absolute;
-    top: calc(var(--cloud-after-top, 0) * 1px);
-    left: 0;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    background-image: url('../cloud.svg');
-    background-repeat: repeat-x;
-    z-index: -1;
-    pointer-events: none;
-    transform: scaleY(calc(0.4 * var(--cloud-scale, 1)));
-    transform-origin: top; /* Сплющивание пойдет от верхней границы вниз */
-    animation: slideClouds 30s linear infinite;
 
-  }
 }
 
 /* #map { position: absolute; top: 0; bottom: 0; width: 100%; } */

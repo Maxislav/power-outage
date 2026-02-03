@@ -1,0 +1,63 @@
+
+
+@keyframes slideClouds {
+  from {
+    left: -100vw;
+  }
+  to {
+    left: 0;
+  }
+}
+
+.clouds{
+  position: absolute;
+  height: 120px;
+  width: 100%;
+  overflow: hidden;
+  left: 0;
+  z-index: -1;
+  &__front,
+  &__back{
+    position: absolute;
+    width: 200%;
+    height: 100%;
+    display: flex;
+    gap: 0;
+
+    &>*{
+      flex: 1 0 50%;
+      aspect-ratio: 1 / 1;
+
+      background-repeat: no-repeat;
+      background-image: url('../cloud.svg');
+      background-position: center;
+      z-index: -1;
+      pointer-events: none;
+      //transform: scaleY(0.25);
+      transform-origin: center; /* Сплющивание пойдет от верхней границы вниз */
+      transition: background-size 3s ease;
+
+    }
+  }
+
+  &__back{
+    top: 12px;
+    animation: slideClouds 100s linear infinite;
+    opacity: 0.7;
+    z-index: 1;
+    &>*{
+      background-size: calc(80 * var(--cloud-scale, 1)*1%)  calc(70 * var(--cloud-scale, 1)*1%) ;
+      background-position: left center;
+    }
+  }
+  &__front{
+    z-index: 2;
+    top: -7px;
+    animation: slideClouds 50s linear infinite;
+    opacity: 1;
+    &>*{
+      background-size: calc(100 * var(--cloud-scale, 1)*1%)  calc(100 * var(--cloud-scale, 1)*1%) ;
+      background-position: right center;
+    }
+  }
+}
