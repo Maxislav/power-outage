@@ -5,7 +5,9 @@ def keystorePropertiesFile = rootProject.file('local.properties')
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
-
+def getTimestamp() {
+    return new Date().format('yyyy-MM-dd-HH-mm')
+}
 android {
     namespace = "app.poweroutage.com"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -43,6 +45,12 @@ android {
 //            applicationIdSuffix ".dev" // Установит рядом второе приложение (например, com.myapp.dev)
             versionNameSuffix "-dev"
             debuggable true
+        }
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def time = getTimestamp()
+            outputFileName = "power-outage-${time}.apk"
         }
     }
 }

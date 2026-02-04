@@ -269,6 +269,7 @@ body,
     // transform: rotate(180deg);   // Поворот, чтобы читалось снизу вверх
     white-space: nowrap;
     font-size: 10px;
+    line-height: 5px;
     padding: 2px 0;
     background: white;
   }
@@ -361,6 +362,9 @@ body,
     border: 1px solid rgb(235, 84, 255);
     background: linear-gradient(120deg, #feffb3 20%, #94bbe9 100%);
     //box-shadow: 0 0 10px wheat, 0 0 10px wheat;
+    &.definite{
+      background: linear-gradient(120deg, #ffb3d3 20%, #94bbe9 100%);
+    }
   }
 
   &__time-container {

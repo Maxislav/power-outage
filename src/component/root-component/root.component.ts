@@ -115,7 +115,7 @@ export class RootComponent {
     @AutoSubscription()
     calcAngle() {
         let i = 0;
-        return timer(1000,10000).pipe(
+        return timer(1000,60000).pipe(
             tap(() => {
                 const sunAngle = getSunPosition(
                     new Date(), // new Date(Date.now() + i * 60 * 60 * 1000),
@@ -126,7 +126,7 @@ export class RootComponent {
                 // 63
 
                 document.getElementById('app').style.backgroundPosition = `50% ${(sunAngle + 63) / 2}%`
-                console.log(sunAngle)
+                //console.log(sunAngle)
                 const skyColorTop = getSunColor(sunAngle);
                 const skyColorBottom = getSunColor(sunAngle, false);
                 //console.log(sunAngle);
@@ -213,6 +213,7 @@ export class RootComponent {
 
             if (index == currentIndex) {
                 slotCtrl.setActive(true);
+                slotCtrl.setSlotType(slot.type);
             }
             if (currentIndex + 1 == index) {
                 slotCtrl.setIsNext(true);
