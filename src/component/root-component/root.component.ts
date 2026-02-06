@@ -52,7 +52,6 @@ export class RootComponent {
     @Viewchild("cloudsContainer1") private readonly cloudsContainerEl1: HTMLElement;
     @Viewchild("cloudsContainer2") private readonly cloudsContainerEl2: HTMLElement;
     @Viewchild("cloudsContainer3") private readonly cloudsContainerEl3: HTMLElement;
-    @Viewchild("cloudsContainer4") private readonly cloudsContainerEl4: HTMLElement;
     private readonly SEC_IN_DAY = 86400;
     dayEls: HTMLElement[] = [];
     weatherComponentCtrl: WeatherComponent
@@ -74,43 +73,24 @@ export class RootComponent {
         ] as HTMLElement[];
 
         this.weatherComponentCtrl = new WeatherComponent();
+        this.weatherComponentCtrl.setCloudsContainers([
+            this.cloudsContainerEl1,
+            this.cloudsContainerEl2,
+            this.cloudsContainerEl3
+        ])
         await this.weatherComponentCtrl.init()
         this.weatherEl.appendChild(this.weatherComponentCtrl.sectionElement);
-        this.cloudsDraw(this.cloudsContainerEl1)
-        this.cloudsDraw(this.cloudsContainerEl2)
-        this.cloudsDraw(this.cloudsContainerEl3)
+
+
+
+        //this.cloudsDraw(this.cloudsContainerEl1)
+       // this.cloudsDraw(this.cloudsContainerEl2)
+        //this.cloudsDraw(this.cloudsContainerEl3)
 
 
     }
 
-    private getCloudBlock(){
 
-        const r1 = getRandom(2,5)
-        const r2 = getRandom(5,20)
-        const cx1 = getRandomCenter(-30,120)
-        const dcx2 = getRandomCenter(10,20)
-        const cy1 = getRandom(40,30)
-        const cy2 = getRandom(30,10)
-        const dur = getRandom(10,20)
-        const begin = getRandom(0,20)
-        return `
-           <circle cx="${cx1}" cy="20" r="7">
-                        <animate attributeName="opacity" values="0;1;1;0.2;0" begin="-${begin}s" dur="${dur}s" repeatCount="indefinite" ></animate>
-                        <animate attributeName="cy" values="${cy1};${cy2}" begin="-${begin}s" dur="${dur}s" repeatCount="indefinite" ></animate>
-                        <animate attributeName="cx" values="${cx1};${cx1+dcx2}" begin="-${begin}s" dur="${dur}s" repeatCount="indefinite" ></animate>
-                        <animate attributeName="r" values="${r1};${r2}" dur="${dur}s" begin="-${begin}s"  repeatCount="indefinite" ></animate>
-           </circle>
-        `
-    }
-
-    private cloudsDraw(el: any){
-        const svgNS = "http://www.w3.org/2000/svg";
-        for (let i = 0; i < 100; i++) {
-            const child = document.createElementNS(svgNS, "g");
-            child.innerHTML = this.getCloudBlock()
-            el.appendChild(child)
-        }
-    }
 
     @AutoSubscription()
     refreshSub() {
