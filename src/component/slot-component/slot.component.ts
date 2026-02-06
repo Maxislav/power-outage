@@ -58,7 +58,7 @@ export class SlotController {
                 this.timeEl.innerText = `${formatMinutes(data.start)}-${formatMinutes(
                     data.end
                 )}`;
-                this.slotEl.classList.add(this.type.toLowerCase());
+                this.slotEl.classList.add(this.type?.toLowerCase());
                 if (this.active) {
                     this.slotEl.classList.add("active");
                 }
