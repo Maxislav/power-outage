@@ -1,8 +1,8 @@
-import {AutoSubscription, Component, Viewchild} from "@app/decorator";
+import { AutoSubscription, Component, Viewchild } from "@app/decorator";
 import template from "./slot.component.html?raw";
-import {filter, firstValueFrom, Subscription, tap, timer} from "rxjs";
-import {EslotType, ISlot} from "@app/model";
-import {formatMinutes, timeUntil} from "@app/helper";
+import { filter, firstValueFrom, Subscription, tap, timer } from "rxjs";
+import { EslotType, ISlot } from "@app/model";
+import { formatMinutes, timeUntil } from "@app/helper";
 
 @Component({
     template,
@@ -17,7 +17,7 @@ export class SlotController {
     private slotData: ISlot;
     private active = false;
     private isNext = false;
-    private type: EslotType
+    private type: EslotType;
 
     hashMap = {
         [EslotType.DEFINITE]: "Запланировано отключение",
@@ -56,7 +56,7 @@ export class SlotController {
                 const data = this.slotData;
                 this.nameEl.innerText = this.hashMap[data.type];
                 this.timeEl.innerText = `${formatMinutes(data.start)}-${formatMinutes(
-                    data.end
+                    data.end,
                 )}`;
                 this.slotEl.classList.add(this.type?.toLowerCase());
                 if (this.active) {
@@ -74,10 +74,9 @@ export class SlotController {
                 if (this.isNext && data.type === EslotType.DEFINITE) {
                     this.untilEl.innerText = timeUntil(data.start, "Осталось");
                 }
-            })
+            }),
         );
     }
 
-    destroy() {
-    }
+    destroy() {}
 }

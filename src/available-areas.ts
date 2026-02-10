@@ -1,4 +1,4 @@
-import {IArea} from "./model";
+import { IArea } from "./model";
 
 export const arealList: IArea[] = [
     {
@@ -28,5 +28,4 @@ export const arealList: IArea[] = [
         slot: "2.2",
         origin: "region",
     },
-
 ];

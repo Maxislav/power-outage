@@ -1,7 +1,7 @@
-import {AutoSubscription, Component, Viewchild} from "@app/decorator";
+import { AutoSubscription, Component, Viewchild } from "@app/decorator";
 import html from "./root.component.html?raw";
-import {capGet, myFetch} from "@app/request";
-import './clouds.less';
+import { capGet, myFetch } from "@app/request";
+import "./clouds.less";
 import {
     distinctUntilChanged,
     from,
@@ -21,19 +21,21 @@ import {
     IDay,
     ISlot,
 } from "@app/model";
-import {Capacitor} from "@capacitor/core";
+import { Capacitor } from "@capacitor/core";
 import dateFormat from "dateformat";
 import {
-    getCurrentSlot, getRandom, getRandomCenter,
+    getCurrentSlot,
+    getRandom,
+    getRandomCenter,
     getSunColor,
     getSunPosition,
     isObjectEmpty,
     timerFormatHtml,
 } from "@app/helper";
-import {SlotController} from "../slot-component/slot.component";
-import {State} from "@app/state/state";
-import {SelectAreaCtrl} from "../select-area-component/select-area.controller";
-import {WeatherComponent} from "@app/component/weather-component/weather.component.ts";
+import { SlotController } from "../slot-component/slot.component";
+import { State } from "@app/state/state";
+import { SelectAreaCtrl } from "../select-area-component/select-area.controller";
+import { WeatherComponent } from "@app/component/weather-component/weather.component.ts";
 
 @Component({
     template: html,
@@ -49,12 +51,10 @@ export class RootComponent {
     @Viewchild("currentTime") private readonly currentTimeEl: HTMLElement;
     @Viewchild("areaSelector") private readonly areaSelectorEl: HTMLElement;
     @Viewchild("weather") private readonly weatherEl: HTMLElement;
-    @Viewchild("cloudsContainer1") private readonly cloudsContainerEl1: HTMLElement;
-    @Viewchild("cloudsContainer2") private readonly cloudsContainerEl2: HTMLElement;
-    @Viewchild("cloudsContainer3") private readonly cloudsContainerEl3: HTMLElement;
+    @Viewchild("clouds") private readonly cloudsEl: HTMLElement;
     private readonly SEC_IN_DAY = 86400;
     dayEls: HTMLElement[] = [];
-    weatherComponentCtrl: WeatherComponent
+    weatherComponentCtrl: WeatherComponent;
 
     state = State.getInstance();
 
@@ -73,35 +73,22 @@ export class RootComponent {
         ] as HTMLElement[];
 
         this.weatherComponentCtrl = new WeatherComponent();
-        this.weatherComponentCtrl.setCloudsContainers([
-            this.cloudsContainerEl1,
-            this.cloudsContainerEl2,
-            this.cloudsContainerEl3
-        ])
-        await this.weatherComponentCtrl.init()
+        await this.weatherComponentCtrl.init();
+        this.weatherComponentCtrl.cloudsDraw(this.cloudsEl);
         this.weatherEl.appendChild(this.weatherComponentCtrl.sectionElement);
-
-
-
-        //this.cloudsDraw(this.cloudsContainerEl1)
-       // this.cloudsDraw(this.cloudsContainerEl2)
-        //this.cloudsDraw(this.cloudsContainerEl3)
-
-
     }
-
-
 
     @AutoSubscription()
     refreshSub() {
         return fromEvent(this.refreshEl, "click").pipe(
-            tap(() => {
+            switchMap(() => {
                 this.clearBeforeUpdate();
+                return from(this.weatherComponentCtrl.getData());
             }),
             switchMap(() => {
-                this.weatherComponentCtrl.getData();
+                this.weatherComponentCtrl.update();
                 return this.myFetchSub().pipe(take(1));
-            })
+            }),
         );
     }
 
@@ -124,35 +111,39 @@ export class RootComponent {
             distinctUntilChanged(),
             tap((dateText) => {
                 this.currentTimeEl.innerHTML = timerFormatHtml(dateText);
-            })
+            }),
         );
     }
 
     @AutoSubscription()
     calcAngle() {
         let i = 0;
-        return timer(1000,60000).pipe(
+        return timer(1000, 60000).pipe(
             tap(() => {
                 const sunAngle = getSunPosition(
                     new Date(), // new Date(Date.now() + i * 60 * 60 * 1000),
                     //new Date(Date.now() + i * 60 * 60 * 1000),
                     50.45,
-                    30.5
+                    30.5,
                 );
                 // 63
 
-                document.getElementById('app').style.backgroundPosition = `50% ${(sunAngle + 63) / 2}%`
+                document.getElementById("app").style.backgroundPosition =
+                    `50% ${(sunAngle + 63) / 2}%`;
                 //console.log(sunAngle)
                 const skyColorTop = getSunColor(sunAngle);
                 const skyColorBottom = getSunColor(sunAngle, false);
                 //console.log(sunAngle);
-                this.rootElement.style.setProperty("--sky-color-top", skyColorTop);
+                this.rootElement.style.setProperty(
+                    "--sky-color-top",
+                    skyColorTop,
+                );
                 this.rootElement.style.setProperty(
                     "--sky-color-bottom",
-                    skyColorBottom
+                    skyColorBottom,
                 );
                 i++;
-            })
+            }),
         );
     }
 
@@ -173,22 +164,26 @@ export class RootComponent {
                             slot: area.slot,
                             data,
                         };
-                    })
+                    }),
                 );
             }),
-            tap(({data: d, slot}: { data: IData; slot: string }) => {
+            tap(({ data: d, slot }: { data: IData; slot: string }) => {
                 this.dayEls.forEach((el) => {
                     el.classList.remove("loading");
                 });
-                if (isObjectEmpty(d) || isObjectEmpty(d[slot]) || !d[slot]?.today?.slots?.length ) {
-                    this.todayEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`
-                    this.tomorrowEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`
+                if (
+                    isObjectEmpty(d) ||
+                    isObjectEmpty(d[slot]) ||
+                    !d[slot]?.today?.slots?.length
+                ) {
+                    this.todayEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`;
+                    this.tomorrowEl.innerHTML = `<div class="shutdown__area-schedule-no-data">Нет данных</div>`;
                     return;
                 }
                 if (d[slot]?.updatedOn) {
                     this.updatedOnEl.innerText = dateFormat(
                         new Date(d[slot].updatedOn),
-                        "yyyy-mmm-dd HH:MM"
+                        "yyyy-mmm-dd HH:MM",
                     );
                 }
 
@@ -199,8 +194,7 @@ export class RootComponent {
                 this.render(today, this.todayEl);
                 this.render(tomorrow, this.tomorrowEl);
                 this.renderSlots(slotsToday);
-
-            })
+            }),
         );
     }
 
@@ -273,16 +267,37 @@ export class RootComponent {
                 firstSlot.type === EslotType.NOTPLANNED &&
                 secondSlot.type === EslotType.NOTPLANNED
             ) {
-                hhValueEl.classList.add("shutdown__value", "shutdown__value--work");
+                hhValueEl.classList.add(
+                    "shutdown__value",
+                    "shutdown__value--work",
+                );
             }
-            if (firstSlot.type === "NotPlanned" && secondSlot.type === "Definite") {
-                hhValueEl.classList.add("shutdown__value", "shutdown__value--second");
+            if (
+                firstSlot.type === "NotPlanned" &&
+                secondSlot.type === "Definite"
+            ) {
+                hhValueEl.classList.add(
+                    "shutdown__value",
+                    "shutdown__value--second",
+                );
             }
-            if (firstSlot.type === "Definite" && secondSlot.type === "NotPlanned") {
-                hhValueEl.classList.add("shutdown__value", "shutdown__value--first");
+            if (
+                firstSlot.type === "Definite" &&
+                secondSlot.type === "NotPlanned"
+            ) {
+                hhValueEl.classList.add(
+                    "shutdown__value",
+                    "shutdown__value--first",
+                );
             }
-            if (firstSlot.type === "Definite" && secondSlot.type === "Definite") {
-                hhValueEl.classList.add("shutdown__value", "shutdown__value--hide");
+            if (
+                firstSlot.type === "Definite" &&
+                secondSlot.type === "Definite"
+            ) {
+                hhValueEl.classList.add(
+                    "shutdown__value",
+                    "shutdown__value--hide",
+                );
             }
 
             rowEl.appendChild(hhKeyEl);
@@ -297,6 +312,5 @@ export class RootComponent {
         });
     }
 
-    destroy() {
-    }
+    destroy() {}
 }
