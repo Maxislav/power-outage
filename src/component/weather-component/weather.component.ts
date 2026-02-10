@@ -19,6 +19,7 @@ export class WeatherComponent {
 
     private cloudsContainerList: HTMLElement[] = [];
     private cloudsAll = 0; // 0.9
+    private childEls: SVGElement[] = []
 
     async init() {
         this.appEl = document.querySelector('#app')
@@ -59,8 +60,8 @@ export class WeatherComponent {
             //const json: IOpenMeteo = await response.json();
             const json: IOpenWeather = await response.json();
             console.log(json);
-            //json.clouds.all = 10
-            this.cloudsAll = json.clouds.all/100;
+            //json.clouds.all = 90
+            this.cloudsAll = json.clouds.all / 100;
             // json.clouds.all = 50
             this.temperatureEl.innerText = json.main.temp > 0 ? `+${json.main.temp.toFixed(1)}` : `${json.main.temp.toFixed(1)}`;
             this.windEl.innerText = `${json.wind.speed.toFixed(1)}`;
@@ -114,10 +115,10 @@ export class WeatherComponent {
 
         const r1 = getRandom(1, 8)
         const r2 = getRandom(10, 15)
-        const cx1 = getRandomCenter(50-(80*this.cloudsAll), 50+70*this.cloudsAll);
+        const cx1 = getRandomCenter(50 - (80 * this.cloudsAll), 50 + 70 * this.cloudsAll);
         const dcx2 = getRandomCenter(1, 20)
         const cy1 = getRandom(40, 30);
-        const cy2 = getRandom(cy1-10*this.cloudsAll, cy1-20*this.cloudsAll)
+        const cy2 = getRandom(cy1 - 10 * this.cloudsAll, cy1 - 20 * this.cloudsAll)
         const dur = getRandom(10, 20)
         const begin = getRandom(0, 20)
         return `
@@ -132,14 +133,20 @@ export class WeatherComponent {
 
     private cloudsDraw(el: any) {
         const svgNS = "http://www.w3.org/2000/svg";
-        el.innerText = ''
-        for (let i = 0; i < 50+(100*this.cloudsAll/0.5); i++) {
+        while (this.childEls.length) {
+            const lastPoint = this.childEls.pop();
+            lastPoint.remove();
+
+        }
+        for (let i = 0; i < 50 + (100 * this.cloudsAll / 0.5); i++) {
             const child = document.createElementNS(svgNS, "g");
+            this.childEls.push(child)
             child.innerHTML = this.getCloudBlock()
             el.appendChild(child)
         }
     }
 
     destroy() {
+
     }
 }
