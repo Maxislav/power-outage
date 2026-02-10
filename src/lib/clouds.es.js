@@ -44,77 +44,71 @@ const u = `<div class="clouds">\r
         </div>\r
     </div>\r
 </div>`;
-function i(n, t) {
-    return Math.floor(Math.random() * (t - n + 1)) + n;
+function i(r, t) {
+  return Math.floor(Math.random() * (t - r + 1)) + r;
 }
-function c(n, t, o = 3) {
-    let s = 0;
-    for (let r = 0; r < o; r++) s += Math.random();
-    const e = s / o;
-    return Math.floor(e * (t - n + 1)) + n;
+function c(r, t, o = 3) {
+  let s = 0;
+  for (let n = 0; n < o; n++)
+    s += Math.random();
+  const e = s / o;
+  return Math.floor(e * (t - r + 1)) + r;
 }
 class p {
-    cloudsContainerList;
-    childEls = [];
-    options = { element: "#app", density: 1 };
-    cloudsAll = 1;
-    constructor(t = {}) {
-        ((this.options = {
-            ...this.options,
-            ...t,
-        }),
-            (this.cloudsAll = this.options.density));
-        const o = document.createElement("section");
-        ((o.innerHTML = u),
-            (this.cloudsContainerList = [
-                o.querySelector("[\\#cloudsContainer1]"),
-                o.querySelector("[\\#cloudsContainer2]"),
-                o.querySelector("[\\#cloudsContainer3]"),
-            ]),
-            typeof this.options.element == "string"
-                ? document.querySelector(this.options.element).appendChild(o)
-                : this.options.element.appendChild(o));
+  cloudsContainerList;
+  childEls = [];
+  options = { element: "#app", density: 1 };
+  cloudsAll = 1;
+  constructor(t = {}) {
+    this.options = {
+      ...this.options,
+      ...t
+    }, this.cloudsAll = this.options.density;
+    const o = document.createElement("slot");
+    o.innerHTML = u, this.cloudsContainerList = [
+      o.querySelector("[\\#cloudsContainer1]"),
+      o.querySelector("[\\#cloudsContainer2]"),
+      o.querySelector("[\\#cloudsContainer3]")
+    ], typeof this.options.element == "string" ? document.querySelector(this.options.element).appendChild(o) : this.options.element.appendChild(o);
+  }
+  init() {
+    for (; this.childEls.length; )
+      this.childEls.pop().remove();
+    return this.cloudsContainerList.forEach((t) => {
+      this.cloudsDraw(t);
+    }), this;
+  }
+  update(t = {}) {
+    return this.options = {
+      ...this.options,
+      ...t
+    }, this.cloudsAll = this.options.density, this.init(), this;
+  }
+  cloudsDraw(t) {
+    const o = "http://www.w3.org/2000/svg";
+    for (let s = 0; s < 50 + 100 * this.cloudsAll / 0.5; s++) {
+      const e = document.createElementNS(o, "g");
+      this.childEls.push(e), e.innerHTML = this.getCloudBlock(), t.appendChild(e);
     }
-    init() {
-        for (; this.childEls.length; ) this.childEls.pop().remove();
-        this.cloudsContainerList.forEach((t) => {
-            this.cloudsDraw(t);
-        });
-    }
-    update(t = {}) {
-        ((this.options = {
-            ...this.options,
-            ...t,
-        }),
-            (this.cloudsAll = this.options.density),
-            this.init());
-    }
-    cloudsDraw(t) {
-        const o = "http://www.w3.org/2000/svg";
-        for (let s = 0; s < 50 + (100 * this.cloudsAll) / 0.5; s++) {
-            const e = document.createElementNS(o, "g");
-            (this.childEls.push(e),
-                (e.innerHTML = this.getCloudBlock()),
-                t.appendChild(e));
-        }
-    }
-    getCloudBlock() {
-        const t = i(1, 8),
-            o = i(10, 15),
-            s = c(50 - 80 * this.cloudsAll, 50 + 70 * this.cloudsAll),
-            e = c(1, 20),
-            r = i(40, 30),
-            d = i(r - 10 * this.cloudsAll, r - 20 * this.cloudsAll),
-            l = i(10, 20),
-            a = i(0, 20);
-        return `
+  }
+  getCloudBlock() {
+    const t = i(1, 8), o = i(10, 15), s = c(
+      50 - 80 * this.cloudsAll,
+      50 + 70 * this.cloudsAll
+    ), e = c(1, 20), n = i(40, 30), d = i(
+      n - 10 * this.cloudsAll,
+      n - 20 * this.cloudsAll
+    ), l = i(10, 20), a = i(0, 20);
+    return `
            <circle cx="${s}" cy="20" r="7">
                         <animate attributeName="opacity" values="0;1;1;0.2;0" begin="-${a}s" dur="${l}s" repeatCount="indefinite" ></animate>
-                        <animate attributeName="cy" values="${r};${d}" begin="-${a}s" dur="${l}s" repeatCount="indefinite" ></animate>
+                        <animate attributeName="cy" values="${n};${d}" begin="-${a}s" dur="${l}s" repeatCount="indefinite" ></animate>
                         <animate attributeName="cx" values="${s};${s + e}" begin="-${a}s" dur="${l}s" repeatCount="indefinite" ></animate>
                         <animate attributeName="r" values="${t};${o}" dur="${l}s" begin="-${a}s"  repeatCount="indefinite" ></animate>
            </circle>
         `;
-    }
+  }
 }
-export { p as Cloud };
+export {
+  p as Cloud
+};

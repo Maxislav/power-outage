@@ -4,7 +4,7 @@ import "./weather.component.less";
 import { IOpenMeteo, IOpenWeather } from "@app/model.ts";
 import { from, fromEvent, map, switchMap, takeUntil, tap, timer } from "rxjs";
 import { Cloud } from "@app/lib/clouds.es.js";
-
+import "./clouds.less";
 @Component({
     template: html,
 })
@@ -59,9 +59,8 @@ export class WeatherComponent {
             //const json: IOpenMeteo = await response.json();
             const json: IOpenWeather = await response.json();
             console.log(json);
-            //json.clouds.all = 90
+            //json.clouds.all = 50
             this.cloudsAll = json.clouds.all / 100;
-            // json.clouds.all = 50
             this.temperatureEl.innerText =
                 json.main.temp > 0
                     ? `+${json.main.temp.toFixed(1)}`
@@ -71,7 +70,7 @@ export class WeatherComponent {
             this.cloudsEl.style.transform = `scale(${json.clouds.all / 100})`;
             this.appEl.style.setProperty(
                 "--cloud-scale",
-                `${json.clouds.all / 100}`,
+                `${this.cloudsAll<0.6 ? this.cloudsAll: 1}`,
             );
 
             const viewportWidth = window.innerWidth;
@@ -110,8 +109,7 @@ export class WeatherComponent {
     }
 
     public cloudsDraw(el: HTMLElement) {
-        this.cloud = new Cloud({ element: el, density: this.cloudsAll });
-        this.cloud.init();
+        this.cloud = new Cloud({ element: el, density: this.cloudsAll }).init();
     }
 
     public update() {

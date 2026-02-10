@@ -1,14 +1,3 @@
-
-
-@keyframes slideClouds {
-  from {
-    left: -50vw;
-  }
-  to {
-    left: 50vw;
-  }
-}
-
 .clouds{
   position: absolute;
   height: 130px;
@@ -20,21 +9,18 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    display: flex;
+   // display: flex;
     gap: 0;
 
     &>*{
-      flex: 1 0 100%;
-      aspect-ratio: 1 / 1;
-
-      background-repeat: no-repeat;
-      background-position: center;
+      height: 100%;
+      width: 100%;
       z-index: -1;
       pointer-events: none;
-      ///transform: scale(0.25, 0.25);
-      transform-origin: center; /* Сплющивание пойдет от верхней границы вниз */
+      transform: scale(var(--cloud-scale, 1), var(--cloud-scale, 1));
+      transform-origin: 80% 80%; /* Сплющивание пойдет от верхней границы вниз */
      // transition: background-size 3s ease;
-      &>svg{
+      & svg{
         height: 100%;
         width: 100%;
       }
