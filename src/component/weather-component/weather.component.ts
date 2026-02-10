@@ -70,7 +70,7 @@ export class WeatherComponent {
             this.cloudsEl.style.transform = `scale(${json.clouds.all / 100})`;
             this.appEl.style.setProperty(
                 "--cloud-scale",
-                `${this.cloudsAll<0.6 ? this.cloudsAll: 1}`,
+                `${this.cloudsAll < 0.6 ? this.cloudsAll : 1}`,
             );
 
             const viewportWidth = window.innerWidth;
