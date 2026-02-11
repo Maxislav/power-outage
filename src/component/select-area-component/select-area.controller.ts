@@ -9,7 +9,7 @@ import { IArea } from "@app/model";
     template,
 })
 export class SelectAreaCtrl {
-    public sectionElement: HTMLElement;
+    public slotElement: HTMLElement;
     private readonly state = State.getInstance();
 
     @Viewchild("list") listEl: HTMLElement;

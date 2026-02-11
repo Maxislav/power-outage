@@ -12,10 +12,10 @@ export function Viewchild(selector: string) {
 export function AutoSubscription() {
     return (target: any, functionName: string) => {
         const fff = () => {};
-        if (!target["AUTO_SUBSCRIBTION"]) {
-            target["AUTO_SUBSCRIBTION"] = [];
+        if (!target["AUTO_SUBSCRIPTION"]) {
+            target["AUTO_SUBSCRIPTION"] = [];
         }
-        target["AUTO_SUBSCRIBTION"].push({ functionName, fff });
+        target["AUTO_SUBSCRIPTION"].push({ functionName, fff });
     };
 }
 
@@ -35,7 +35,7 @@ export function Controller() {
 
         constructor.prototype.init = async function (...args: any[]) {
             mainSub = new Subscription();
-            const refSub = this["AUTO_SUBSCRIBTION"] || [];
+            const refSub = this["AUTO_SUBSCRIPTION"] || [];
 
             if (originalInit) {
                 const rr = await originalInit.apply(this, args);
@@ -62,18 +62,17 @@ export function Component(props: { template: string }) {
         return class extends originalConstructor {
             hostElement: Element;
             rootElement: HTMLElement;
-            sectionElement: HTMLElement;
+            slotElement: HTMLElement;
             __rootElement: HTMLElement;
             __mainSub: Subscription;
             __section: HTMLElement;
-            AUTO_SUBSCRIBTION =
-                originalConstructor.prototype["AUTO_SUBSCRIBTION"] || [];
+            AUTO_SUBSCRIPTION =
+                originalConstructor.prototype["AUTO_SUBSCRIPTION"] || [];
             VIEW_CHILD_REFS =
                 originalConstructor.prototype["VIEW_CHILD_REFS"] || [];
 
             constructor(...args: any[]) {
                 super(...args);
-                //console.log("Template:", props.template);
             }
 
             // Теперь TS знает, что super.init существует
@@ -84,14 +83,11 @@ export function Component(props: { template: string }) {
                 this.__mainSub = new Subscription();
                 this.__rootElement = document.querySelector(selector);
                 this.rootElement = this.__rootElement;
-                //this.__rootElement;
-                this.__section = document.createElement("section");
-
-                this.__section.style.display = "contents";
+                this.__section = document.createElement("slot");
                 this.__section.innerHTML = props.template;
-                this.sectionElement = this.__section;
+                this.slotElement = this.__section;
                 this.hostElement = this.__section.firstElementChild;
-                const refSub = this["AUTO_SUBSCRIBTION"] || [];
+                const refSub = this["AUTO_SUBSCRIPTION"] || [];
                 const refs = this["VIEW_CHILD_REFS"] || [];
                 // debugger
                 refs.forEach((ref: any) => {
@@ -137,8 +133,8 @@ export function Service() {
     >(originalConstructor: T, context?: ClassDecoratorContext) {
         return class extends originalConstructor {
             __mainSub: Subscription;
-            AUTO_SUBSCRIBTION =
-                originalConstructor.prototype["AUTO_SUBSCRIBTION"] || [];
+            AUTO_SUBSCRIPTION =
+                originalConstructor.prototype["AUTO_SUBSCRIPTION"] || [];
 
             constructor(...args: any[]) {
                 super(...args);
@@ -151,7 +147,7 @@ export function Service() {
                 // const selector = args[0];
                 this.__mainSub = new Subscription();
 
-                const refSub = this["AUTO_SUBSCRIBTION"] || [];
+                const refSub = this["AUTO_SUBSCRIPTION"] || [];
 
                 // debugger
 

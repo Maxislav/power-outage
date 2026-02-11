@@ -8,11 +8,11 @@ import { formatMinutes, timeUntil } from "@app/helper";
     template,
 })
 export class SlotController {
-    sectionElement: HTMLElement;
-    @Viewchild("name") nameEl: HTMLElement;
-    @Viewchild("time") timeEl: HTMLElement;
-    @Viewchild("until") untilEl: HTMLElement;
-    @Viewchild("slot") slotEl: HTMLElement;
+    public slotElement: HTMLElement;
+    @Viewchild("name") private nameEl: HTMLElement;
+    @Viewchild("time") private timeEl: HTMLElement;
+    @Viewchild("until") private untilEl: HTMLElement;
+    @Viewchild("slot") private slotEl: HTMLElement;
 
     private slotData: ISlot;
     private active = false;

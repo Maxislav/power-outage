@@ -9,7 +9,7 @@ import "./clouds.less";
     template: html,
 })
 export class WeatherComponent {
-    public sectionElement: HTMLElement;
+    public slotElement: HTMLElement;
     private hostElement: HTMLElement;
     appEl: HTMLElement;
     @Viewchild("temperature") temperatureEl: HTMLElement;
@@ -59,7 +59,7 @@ export class WeatherComponent {
             //const json: IOpenMeteo = await response.json();
             const json: IOpenWeather = await response.json();
             console.log(json);
-            //json.clouds.all = 50
+            //json.clouds.all = 20
             this.cloudsAll = json.clouds.all / 100;
             this.temperatureEl.innerText =
                 json.main.temp > 0
@@ -70,9 +70,8 @@ export class WeatherComponent {
             this.cloudsEl.style.transform = `scale(${json.clouds.all / 100})`;
             this.appEl.style.setProperty(
                 "--cloud-scale",
-                `${this.cloudsAll < 0.6 ? this.cloudsAll : 1}`,
+                `${this.cloudsAll*(2-this.cloudsAll)}`,
             );
-
             const viewportWidth = window.innerWidth;
 
             //console.log(viewportWidth);

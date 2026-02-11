@@ -12,21 +12,11 @@ import {
     tap,
     timer,
 } from "rxjs";
-import {
-    EGpv,
-    EslotType,
-    EStatus,
-    IArea,
-    IData,
-    IDay,
-    ISlot,
-} from "@app/model";
+import { EslotType, EStatus, IArea, IData, IDay, ISlot } from "@app/model";
 import { Capacitor } from "@capacitor/core";
 import dateFormat from "dateformat";
 import {
     getCurrentSlot,
-    getRandom,
-    getRandomCenter,
     getSunColor,
     getSunPosition,
     isObjectEmpty,
@@ -41,8 +31,8 @@ import { WeatherComponent } from "@app/component/weather-component/weather.compo
     template: html,
 })
 export class RootComponent {
-    rootElement: HTMLDivElement;
-    sectionElement: HTMLDivElement;
+    private rootElement: HTMLDivElement;
+    private slotElement: HTMLDivElement;
     @Viewchild("today") private readonly todayEl: HTMLElement;
     @Viewchild("tomorrow") private readonly tomorrowEl: HTMLElement;
     @Viewchild("refresh") private readonly refreshEl: HTMLElement;
@@ -66,16 +56,16 @@ export class RootComponent {
         const selectAreaCtrl = new SelectAreaCtrl();
         selectAreaCtrl.init();
 
-        this.areaSelectorEl.appendChild(selectAreaCtrl.sectionElement);
+        this.areaSelectorEl.appendChild(selectAreaCtrl.slotElement);
 
         this.dayEls = [
-            ...this.sectionElement.querySelectorAll(".shutdown__day"),
+            ...this.slotElement.querySelectorAll(".shutdown__day"),
         ] as HTMLElement[];
 
         this.weatherComponentCtrl = new WeatherComponent();
         await this.weatherComponentCtrl.init();
         this.weatherComponentCtrl.cloudsDraw(this.cloudsEl);
-        this.weatherEl.appendChild(this.weatherComponentCtrl.sectionElement);
+        this.weatherEl.appendChild(this.weatherComponentCtrl.slotElement);
     }
 
     @AutoSubscription()
@@ -216,8 +206,7 @@ export class RootComponent {
             const slotCtrl = new SlotController();
             slotCtrl.init();
             this.slotList.push(slotCtrl);
-            slotCtrl.sectionElement;
-            this.slotsEl.appendChild(slotCtrl.sectionElement);
+            this.slotsEl.appendChild(slotCtrl.slotElement);
 
             slotCtrl.setData(slot);
 
