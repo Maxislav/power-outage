@@ -12,7 +12,9 @@ export declare class Cloud {
 
 declare interface CloudsOptions {
     element: string | HTMLElement;
-    density: number;
+    volume: number;
+    clustering: number;
+    noice: number;
 }
 
 export { }

@@ -22,6 +22,7 @@ export class WeatherComponent {
 
     async init() {
         this.appEl = document.querySelector("#app");
+        new Cloud({ element: this.cloudsEl, volume: 0.6, noice: 10, clustering: 10}).init();
         await this.getData();
     }
 
@@ -59,7 +60,7 @@ export class WeatherComponent {
             //const json: IOpenMeteo = await response.json();
             const json: IOpenWeather = await response.json();
             console.log(json);
-            //json.clouds.all = 20
+            //json.clouds.all = 100
             this.cloudsAll = json.clouds.all / 100;
             this.temperatureEl.innerText =
                 json.main.temp > 0
@@ -108,12 +109,13 @@ export class WeatherComponent {
     }
 
     public cloudsDraw(el: HTMLElement) {
-        this.cloud = new Cloud({ element: el, density: this.cloudsAll }).init();
+       // debugger
+        this.cloud = new Cloud({ element: el, volume: this.cloudsAll, noice: 100*this.cloudsAll/2 }).init();
     }
 
     public update() {
         this.cloud.update({
-            density: this.cloudsAll,
+            volume: this.cloudsAll,
         });
     }
 
